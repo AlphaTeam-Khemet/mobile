@@ -20,7 +20,10 @@ class _SignInPageState extends State<SignInPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   void _goToRegister(BuildContext context) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterPage()));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const RegisterPage()),
+    );
   }
 
   void _goToHome(BuildContext context) {
@@ -39,18 +42,23 @@ class _SignInPageState extends State<SignInPage> {
 
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => MainNavigationPage(),
-    ));
+      MaterialPageRoute(
+        builder: (_) => const MainNavigationPage(isGuest: false),
+      ),
+    );
   }
 
   void _goToForgotPassword(BuildContext context) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => const ForgotPasswordPage()));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const ForgotPasswordPage()),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth  = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: const Color(0xFFE6DCCF),
@@ -58,7 +66,10 @@ class _SignInPageState extends State<SignInPage> {
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04, vertical: screenHeight * 0.02),
+              padding: EdgeInsets.symmetric(
+                horizontal: screenWidth * 0.04,
+                vertical: screenHeight * 0.02,
+              ),
               child: Row(
                 children: [
                   IconButton(
@@ -66,20 +77,38 @@ class _SignInPageState extends State<SignInPage> {
                     onPressed: () => Navigator.pop(context),
                   ),
                   const Spacer(),
-                  Text("Sign In", style: TextStyle(fontSize: screenWidth * 0.07, fontWeight: FontWeight.bold)),
+                  Text(
+                    "Sign In",
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.07,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const Spacer(flex: 2),
                 ],
               ),
             ),
             Expanded(
               child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.06, vertical: screenHeight * 0.02),
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth * 0.06,
+                  vertical: screenHeight * 0.02,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Welcome back", style: TextStyle(fontSize: screenWidth * 0.08, fontWeight: FontWeight.w600)),
+                    Text(
+                      "Welcome back",
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.08,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     const SizedBox(height: 8),
-                    Text("Sign in to continue your journey through history.", style: TextStyle(color: Colors.black54)),
+                    Text(
+                      "Sign in to continue your journey through history.",
+                      style: TextStyle(color: Colors.black54),
+                    ),
 
                     SizedBox(height: screenHeight * 0.07),
 
@@ -89,10 +118,20 @@ class _SignInPageState extends State<SignInPage> {
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          colors: [Colors.white, Colors.white.withOpacity(0.9), Colors.white.withOpacity(0.8)],
+                          colors: [
+                            Colors.white,
+                            Colors.white.withOpacity(0.9),
+                            Colors.white.withOpacity(0.8),
+                          ],
                         ),
                         borderRadius: BorderRadius.circular(16),
-                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8, offset: const Offset(0, 4))],
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
                       child: Column(
                         children: [
@@ -107,7 +146,9 @@ class _SignInPageState extends State<SignInPage> {
                             label: "Password",
                             hint: "Enter your password",
                             obscure: _obscurePassword,
-                            toggleVisibility: () => setState(() => _obscurePassword = !_obscurePassword),
+                            toggleVisibility: () => setState(
+                              () => _obscurePassword = !_obscurePassword,
+                            ),
                             controller: _passwordController,
                           ),
                           SizedBox(height: screenHeight * 0.015),
@@ -116,19 +157,40 @@ class _SignInPageState extends State<SignInPage> {
                             alignment: Alignment.centerRight,
                             child: TextButton(
                               onPressed: () => _goToForgotPassword(context),
-                              child: const Text("Forgot password?", style: TextStyle(color: Color(0xFF8B6F4E))),
+                              child: const Text(
+                                "Forgot password?",
+                                style: TextStyle(color: Color(0xFF8B6F4E)),
+                              ),
                             ),
                           ),
                           SizedBox(height: screenHeight * 0.03),
 
-                          CustomActionButton(text: "Sign In", onTap: () => _goToHome(context)),
+                          CustomActionButton(
+                            text: "Sign In",
+                            onTap: () => _goToHome(context),
+                          ),
                         ],
                       ),
                     ),
 
                     SizedBox(height: screenHeight * 0.12),
 
-                    CustomActionButton(text: "Continue as Guest", onTap: () => _goToHome(context), outlined: true),
+                    CustomActionButton(
+                      text: "Continue as Guest",
+
+                      onTap: () {
+                        Navigator.pushReplacement(
+                          context,
+
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                const MainNavigationPage(isGuest: true),
+                          ),
+                        );
+                      },
+
+                      outlined: true,
+                    ),
                     const SizedBox(height: 10),
 
                     Center(
@@ -156,7 +218,7 @@ class _SignInPageState extends State<SignInPage> {
                           ),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),

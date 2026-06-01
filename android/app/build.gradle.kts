@@ -6,8 +6,10 @@ plugins {
 
 android {
     namespace = "com.example.graduation_project"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973"   // ✅ تحديث الـ NDK
+
+    compileSdk = 36
+
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -15,13 +17,16 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = "11"
     }
 
     defaultConfig {
         applicationId = "com.example.graduation_project"
-        minSdk = 23                  // ✅ تحديث الـ minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+
+        minSdk = 23
+
+        targetSdk = 36
+
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }

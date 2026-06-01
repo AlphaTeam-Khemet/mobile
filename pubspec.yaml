@@ -52,6 +52,8 @@ dev_dependencies:
   photo_manager: ^3.0.0
   share_plus: ^7.0.0
   video_player: ^2.8.2
+  dio: ^5.8.0+1
+  shared_preferences: ^2.5.3
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../main_tab_home/main_tab_home.dart';
 import 'onboarding1.dart';
 import '../auth/signin.dart';
 import '../auth/register.dart';
@@ -8,15 +9,27 @@ class WelcomePage extends StatelessWidget {
   const WelcomePage({Key? key}) : super(key: key);
 
   void _goToSignIn(BuildContext context) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => const SignInPage()));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const SignInPage()),
+    );
   }
 
   void _goToRegister(BuildContext context) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterPage()));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const RegisterPage()),
+    );
   }
 
   void _goToOnboarding(BuildContext context) {
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const Onboarding1()));
+    Navigator.pushReplacement(
+      context,
+
+      MaterialPageRoute(
+        builder: (_) => const MainNavigationPage(isGuest: true),
+      ),
+    );
   }
 
   @override
@@ -24,7 +37,6 @@ class WelcomePage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // الخلفية
           Container(
             height: MediaQuery.of(context).size.height,
             width: double.infinity,
@@ -36,7 +48,6 @@ class WelcomePage extends StatelessWidget {
             ),
           ),
 
-          // التدرج
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -61,7 +72,6 @@ class WelcomePage extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-
                   const SizedBox(height: 12),
                   const Text(
                     "Explore thousands of years of history with\n your personal AI guide. Translate hieroglyphs\n and uncover stories instantly.",
@@ -82,7 +92,18 @@ class WelcomePage extends StatelessWidget {
 
                   CustomActionButton(
                     text: "Continue as Guest",
-                    onTap: () => _goToOnboarding(context),
+
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              const MainNavigationPage(isGuest: true),
+                        ),
+                      );
+                    },
+
                     outlined: true,
                   ),
                   const SizedBox(height: 20),
@@ -110,8 +131,7 @@ class WelcomePage extends StatelessWidget {
                         ],
                       ),
                     ),
-                  )
-
+                  ),
                 ],
               ),
             ),

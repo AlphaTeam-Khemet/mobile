@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:graduation_project/main_tab_home/main_tab_home.dart';
 import 'package:graduation_project/onboarding/splashscreen.dart';
+
+import 'forgot_password/verification_code.dart';
 
 void main() {
   runApp(const MyApp());

@@ -5,9 +5,14 @@ import '../details/settings_page.dart';
 import '../home/home_screen.dart';
 import '../translate/translate_page.dart';
 import '../widgets/app_colors.dart';
-
 class MainNavigationPage extends StatefulWidget {
-  const MainNavigationPage({Key? key}) : super(key: key);
+
+  final bool isGuest;
+
+  const MainNavigationPage({
+    Key? key,
+    this.isGuest = false,
+  }) : super(key: key);
 
   @override
   State<MainNavigationPage> createState() =>
@@ -22,6 +27,23 @@ class _MainNavigationPageState
   final List<Map<String, dynamic>> favorites = [];
 
   void _openTranslate(BuildContext context) {
+
+    if (widget.isGuest) {
+
+      ScaffoldMessenger.of(context).showSnackBar(
+
+        const SnackBar(
+
+          content: Text(
+            "Please register first to use Translate feature.",
+          ),
+
+          backgroundColor: Colors.red,
+        ),
+      );
+
+      return;
+    }
 
     Navigator.push(
 

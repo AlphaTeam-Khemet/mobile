@@ -3,17 +3,18 @@ import 'package:graduation_project/details/artifact_details_page.dart';
 import 'package:graduation_project/home/start_tour_page.dart';
 
 import '../chat/chat_bot_page.dart';
+import '../details/collection_page.dart';
 import '../widgets/app_colors.dart';
 
 class HomePage extends StatefulWidget {
-
   final List<Map<String, dynamic>> favorites;
   final Function() onFavoriteChanged;
 
   const HomePage({
     Key? key,
     required this.favorites,
-    required this.onFavoriteChanged, required List<Map<String, dynamic>> favoriteItems,
+    required this.onFavoriteChanged,
+    required List<Map<String, dynamic>> favoriteItems,
   }) : super(key: key);
 
   @override
@@ -21,14 +22,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
-  final TextEditingController _searchController =
-  TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   String _searchQuery = '';
 
   final List<Map<String, dynamic>> artifacts = [
-
     {
       "title": "Golden Mask of Tutankhamun",
 
@@ -62,53 +60,32 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
 
-    final screenHeight =
-        MediaQuery.of(context).size.height;
-
-    final screenWidth =
-        MediaQuery.of(context).size.width;
-
+    final screenWidth = MediaQuery.of(context).size.width;
 
     final filteredArtifacts = artifacts.where((artifact) {
+      final title = artifact["title"].toString().toLowerCase();
 
-      final title =
-      artifact["title"]
-          .toString()
-          .toLowerCase();
-
-      final query =
-      _searchQuery.toLowerCase();
+      final query = _searchQuery.toLowerCase();
 
       return title.contains(query);
-
     }).toList();
 
     return Scaffold(
-
       backgroundColor: AppColors.background,
 
       body: SafeArea(
-
         child: SingleChildScrollView(
-
-          padding: EdgeInsets.symmetric(
-            horizontal: screenWidth * 0.05,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
 
           child: Column(
-
-            crossAxisAlignment:
-            CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
 
             children: [
-
-              SizedBox(
-                height: screenHeight * 0.03,
-              ),
+              SizedBox(height: screenHeight * 0.03),
 
               const Text(
-
                 "Welcome to",
 
                 style: TextStyle(
@@ -119,7 +96,6 @@ class _HomePageState extends State<HomePage> {
               ),
 
               const Text(
-
                 "KHEMET Smart Guide",
 
                 style: TextStyle(
@@ -132,77 +108,54 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 6),
 
               const Text(
-
                 "Explore the treasures of ancient Egypt.",
 
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.black54,
-                ),
+                style: TextStyle(fontSize: 18, color: Colors.black54),
               ),
 
-              SizedBox(
-                height: screenHeight * 0.03,
-              ),
+              SizedBox(height: screenHeight * 0.03),
 
               TextField(
-
                 controller: _searchController,
 
                 onChanged: (value) {
-
                   setState(() {
                     _searchQuery = value;
                   });
                 },
 
                 decoration: InputDecoration(
-
                   hintText: "Search artifacts",
 
-                  prefixIcon: const Icon(
-                    Icons.search,
-                    color: Colors.black54,
-                  ),
+                  prefixIcon: const Icon(Icons.search, color: Colors.black54),
 
                   filled: true,
 
                   fillColor: Colors.white,
 
                   border: OutlineInputBorder(
-
-                    borderRadius:
-                    BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(14),
 
                     borderSide: BorderSide.none,
                   ),
                 ),
               ),
 
-              SizedBox(
-                height: screenHeight * 0.03,
-              ),
+              SizedBox(height: screenHeight * 0.03),
 
               Container(
-
                 height: screenHeight * 0.38,
 
                 decoration: BoxDecoration(
-
-                  borderRadius:
-                  BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(20),
 
                   image: const DecorationImage(
-
-                    image: AssetImage(
-                      'assets/image/Home.png',
-                    ),
+                    image: AssetImage('assets/image/Home.png'),
 
                     fit: BoxFit.cover,
                   ),
 
                   boxShadow: [
-
                     BoxShadow(
                       color: Colors.black.withOpacity(0.25),
                       blurRadius: 10,
@@ -212,24 +165,17 @@ class _HomePageState extends State<HomePage> {
                 ),
 
                 child: Stack(
-
                   children: [
-
                     Container(
-
                       decoration: BoxDecoration(
-
-                        borderRadius:
-                        BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(20),
 
                         gradient: LinearGradient(
-
                           begin: Alignment.topCenter,
 
                           end: Alignment.bottomCenter,
 
                           colors: [
-
                             Colors.transparent,
 
                             Colors.black.withOpacity(0.3),
@@ -239,26 +185,18 @@ class _HomePageState extends State<HomePage> {
                     ),
 
                     Stack(
-
                       children: [
-
                         Align(
-
                           alignment: Alignment.center,
 
                           child: Column(
-
-                            mainAxisSize:
-                            MainAxisSize.min,
+                            mainAxisSize: MainAxisSize.min,
 
                             children: [
-
                               RichText(
-
                                 textAlign: TextAlign.center,
 
                                 text: const TextSpan(
-
                                   style: TextStyle(
                                     fontSize: 22,
                                     fontWeight: FontWeight.bold,
@@ -266,19 +204,14 @@ class _HomePageState extends State<HomePage> {
                                   ),
 
                                   children: [
-
                                     TextSpan(
                                       text: 'Discover the\n',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
+                                      style: TextStyle(color: Colors.white),
                                     ),
 
                                     TextSpan(
                                       text: 'Wonders of ',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
+                                      style: TextStyle(color: Colors.white),
                                     ),
 
                                     TextSpan(
@@ -295,64 +228,42 @@ class _HomePageState extends State<HomePage> {
                         ),
 
                         Align(
-
                           alignment: Alignment.bottomCenter,
 
                           child: Padding(
-
-                            padding:
-                            const EdgeInsets.only(
-                              bottom: 40,
-                            ),
+                            padding: const EdgeInsets.only(bottom: 40),
 
                             child: SizedBox(
-
                               width: 300,
 
                               child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFC9A24D),
 
-                                style:
-                                ElevatedButton.styleFrom(
-
-                                  backgroundColor:
-                                  const Color(0xFFC9A24D),
-
-                                  padding:
-                                  const EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                     vertical: 12,
                                   ),
 
-                                  shape:
-                                  RoundedRectangleBorder(
-
-                                    borderRadius:
-                                    BorderRadius.circular(12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
                                 ),
 
                                 onPressed: () {
-
                                   Navigator.push(
-
                                     context,
 
                                     MaterialPageRoute(
-
-                                      builder: (_) =>
-                                      const StartTourPage(),
+                                      builder: (_) => const StartTourPage(),
                                     ),
                                   );
                                 },
 
                                 child: Row(
-
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
 
                                   children: const [
-
                                     Text(
-
                                       "Start Tour",
 
                                       style: TextStyle(
@@ -375,27 +286,18 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),
 
-              SizedBox(
-                height: screenHeight * 0.04,
-              ),
-
+              SizedBox(height: screenHeight * 0.04),
 
               Row(
-
-                mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
-
-                children: const [
-
-                  Text(
-
-                    "Museum Highlights",
-
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Collection",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
@@ -403,41 +305,40 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
 
-                  Text(
-
-                    "View All",
-
-                    style: TextStyle(
-                      color: Color(0xFFC9A24D),
-                      fontWeight: FontWeight.w800,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              CollectionPage(collectionItems: artifacts),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      "View All",
+                      style: TextStyle(
+                        color: Color(0xFFC9A24D),
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ),
                 ],
               ),
+              SizedBox(height: screenHeight * 0.02),
 
               SizedBox(
-                height: screenHeight * 0.02,
-              ),
-
-
-              SizedBox(
-
                 height: screenHeight * 0.44,
 
                 child: ListView.builder(
-
                   scrollDirection: Axis.horizontal,
 
                   itemCount: filteredArtifacts.length,
 
                   itemBuilder: (context, index) {
+                    final artifact = filteredArtifacts[index];
 
-                    final artifact =
-                    filteredArtifacts[index];
-
-                    return _buildArtifactCard(
-                      artifact,
-                    );
+                    return _buildArtifactCard(artifact);
                   },
                 ),
               ),
@@ -447,109 +348,70 @@ class _HomePageState extends State<HomePage> {
       ),
 
       floatingActionButton: FloatingActionButton(
-
         heroTag: "chatbot",
 
-        backgroundColor:
-        const Color(0xFFC9A24D),
+        backgroundColor: const Color(0xFFC9A24D),
 
         elevation: 8,
 
         onPressed: () {
-
           Navigator.push(
-
             context,
 
-            MaterialPageRoute(
-
-              builder: (_) => const ChatBotPage(),
-            ),
+            MaterialPageRoute(builder: (_) => const ChatBotPage()),
           );
         },
 
-        child: const Icon(
-          Icons.auto_awesome,
-          color: Colors.black,
-          size: 28,
-        ),
+        child: const Icon(Icons.auto_awesome, color: Colors.black, size: 28),
       ),
     );
   }
 
+  Widget _buildArtifactCard(Map<String, dynamic> artifact) {
+    final String image = artifact["image"];
 
-  Widget _buildArtifactCard(
-      Map<String, dynamic> artifact,
-      ) {
+    final String title = artifact["title"];
 
-    final String image =
-    artifact["image"];
+    final String subtitle = artifact["subtitle"];
 
-    final String title =
-    artifact["title"];
+    final List<String> tags = List<String>.from(artifact["tags"]);
 
-    final String subtitle =
-    artifact["subtitle"];
-
-    final List<String> tags =
-    List<String>.from(
-      artifact["tags"],
-    );
-
-    final bool isFavorite =
-    widget.favorites.any(
-          (item) => item['title'] == title,
+    final bool isFavorite = widget.favorites.any(
+      (item) => item['title'] == title,
     );
 
     return GestureDetector(
-
       onTap: () {
-
         Navigator.push(
-
           context,
 
           MaterialPageRoute(
-
             builder: (_) => ArtifactDetailsPage(
-
               title: title,
-
               imagePath: image,
-
-              dynasty:
-              tags.isNotEmpty
-                  ? tags[0]
-                  : "",
-
-              material:
-              tags.length > 1
-                  ? tags[1]
-                  : "",
-
+              dynasty: tags.isNotEmpty ? tags[0] : "",
+              material: tags.length > 1 ? tags[1] : "",
               description: subtitle,
+
+              favorites: widget.favorites,
+
+              onFavoriteChanged: widget.onFavoriteChanged,
             ),
           ),
         );
       },
 
       child: Container(
-
         width: 220,
 
-        margin: const EdgeInsets.only(
-          right: 18,
-        ),
+        margin: const EdgeInsets.only(right: 18),
 
         decoration: BoxDecoration(
-
           color: Colors.white,
 
-          borderRadius:
-          BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(22),
 
           boxShadow: [
-
             BoxShadow(
               color: Colors.black.withOpacity(0.08),
               blurRadius: 10,
@@ -559,31 +421,21 @@ class _HomePageState extends State<HomePage> {
         ),
 
         child: Column(
-
-          crossAxisAlignment:
-          CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
 
           children: [
-
             Padding(
-
               padding: const EdgeInsets.all(10),
 
               child: Stack(
-
                 children: [
-
                   ClipRRect(
-
-                    borderRadius:
-                    const BorderRadius.only(
-
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(18),
                       topRight: Radius.circular(18),
                     ),
 
                     child: Image.asset(
-
                       image,
 
                       height: 240,
@@ -594,56 +446,37 @@ class _HomePageState extends State<HomePage> {
                   ),
 
                   Positioned(
-
                     top: 10,
                     right: 10,
 
                     child: GestureDetector(
-
                       onTap: () {
-
-                        final alreadyExists =
-                        widget.favorites.any(
-                              (item) =>
-                          item['title'] == title,
+                        final alreadyExists = widget.favorites.any(
+                          (item) => item['title'] == title,
                         );
 
                         setState(() {
-
                           if (alreadyExists) {
-
                             widget.favorites.removeWhere(
-                                  (item) =>
-                              item['title'] == title,
+                              (item) => item['title'] == title,
                             );
 
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(
-
+                            ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text(
-                                  "Removed from Favorites 💔",
-                                ),
+                                content: Text("Removed from Favorites 💔"),
                               ),
                             );
-
                           } else {
-
                             widget.favorites.add({
-
                               'title': title,
                               'subtitle': subtitle,
                               'image': image,
                               'tags': tags,
                             });
 
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(
-
+                            ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text(
-                                  "Added to Favorites ❤️",
-                                ),
+                                content: Text("Added to Favorites ❤️"),
                               ),
                             );
                           }
@@ -653,22 +486,16 @@ class _HomePageState extends State<HomePage> {
                       },
 
                       child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 250),
 
-                        duration:
-                        const Duration(milliseconds: 250),
-
-                        padding:
-                        const EdgeInsets.all(7),
+                        padding: const EdgeInsets.all(7),
 
                         decoration: BoxDecoration(
-
-                          color:
-                          Colors.white.withOpacity(0.92),
+                          color: Colors.white.withOpacity(0.92),
 
                           shape: BoxShape.circle,
 
                           boxShadow: [
-
                             BoxShadow(
                               color: Colors.black.withOpacity(0.15),
                               blurRadius: 6,
@@ -677,10 +504,7 @@ class _HomePageState extends State<HomePage> {
                         ),
 
                         child: Icon(
-
-                          isFavorite
-                              ? Icons.favorite
-                              : Icons.favorite_border,
+                          isFavorite ? Icons.favorite : Icons.favorite_border,
 
                           color: isFavorite
                               ? Colors.redAccent
@@ -696,21 +520,13 @@ class _HomePageState extends State<HomePage> {
             ),
 
             Padding(
-
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 8,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
 
               child: Column(
-
-                crossAxisAlignment:
-                CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
 
                 children: [
-
                   Text(
-
                     title,
 
                     style: const TextStyle(
@@ -723,53 +539,42 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: 4),
 
                   Text(
-
                     subtitle,
 
-                    style: const TextStyle(
-                      color: Colors.black54,
-                      fontSize: 13,
-                    ),
+                    style: const TextStyle(color: Colors.black54, fontSize: 13),
                   ),
 
                   const SizedBox(height: 10),
 
                   Wrap(
-
                     spacing: 6,
                     runSpacing: 6,
 
-                    children: tags.map(
-
+                    children: tags
+                        .map(
                           (tag) => Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
 
-                        padding:
-                        const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
-                        ),
+                            decoration: BoxDecoration(
+                              color: AppColors.background.withOpacity(0.7),
 
-                        decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
 
-                          color:
-                          AppColors.background
-                              .withOpacity(0.7),
+                            child: Text(
+                              tag,
 
-                          borderRadius:
-                          BorderRadius.circular(10),
-                        ),
-
-                        child: Text(
-
-                          tag,
-
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: Colors.black87,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: Colors.black87,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ).toList(),
+                        )
+                        .toList(),
                   ),
                 ],
               ),
