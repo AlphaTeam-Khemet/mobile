@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'welcome.dart';
 import 'onboarding1.dart';
 import 'onboarding3.dart';
+import '../localization/app_localization.dart';
 
 class Onboarding2 extends StatefulWidget {
   const Onboarding2({Key? key}) : super(key: key);
@@ -62,9 +63,9 @@ class _Onboarding2State extends State<Onboarding2> {
                   MaterialPageRoute(builder: (context) => const WelcomePage()),
                 );
               },
-              child: const Text(
-                "Skip",
-                style: TextStyle(
+              child: Text(
+                AppLocalization.translate("skip"),
+                style: const TextStyle(
                   color: Color(0xFF8B6F4E),
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -109,21 +110,28 @@ class _Onboarding2State extends State<Onboarding2> {
                     Expanded(
                       child: SingleChildScrollView(
                         child: Column(
-                          children: const [
-                            SizedBox(height: 14),
+                          children: [
+                            const SizedBox(height: 14),
+
                             Text(
-                              "Scan artifacts and learn their history",
-                              style: TextStyle(
+                              AppLocalization.translate(
+                                "scan_artifacts_title",
+                              ),
+                              style: const TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.w700,
                                 color: Colors.black87,
                               ),
                               textAlign: TextAlign.center,
                             ),
-                            SizedBox(height: 10),
+
+                            const SizedBox(height: 10),
+
                             Text(
-                              "Point your camera at any exhibit to instantly reveal its stories, timeline, and translation of ancient hieroglyphs.",
-                              style: TextStyle(
+                              AppLocalization.translate(
+                                "scan_artifacts_description",
+                              ),
+                              style: const TextStyle(
                                 fontSize: 18,
                                 color: Colors.black54,
                               ),

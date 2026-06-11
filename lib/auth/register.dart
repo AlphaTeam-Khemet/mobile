@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../localization/app_localization.dart';
 import 'signin.dart';
 import '../shared_widgets/custom_text_field.dart';
 import '../shared_widgets/password_strength_bar.dart';
@@ -51,8 +52,10 @@ class _RegisterPageState extends State<RegisterPage> {
         _password.isEmpty ||
         _confirmPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("All fields are required!"),
+        SnackBar(
+          content: Text(
+            AppLocalization.translate("all_fields_are_required"),
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -62,8 +65,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
     if (_password.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Password must be at least 6 characters."),
+        SnackBar(
+          content: Text(
+            AppLocalization.translate("password_must_be_at_least_6_characters"),
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -73,8 +78,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
     if (_password != _confirmPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Passwords do not match!"),
+        SnackBar(
+          content: Text(
+            AppLocalization.translate("passwords_do_not_match"),
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -84,8 +91,12 @@ class _RegisterPageState extends State<RegisterPage> {
 
     if (!_agreeToTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("You must agree to the Terms & Privacy Policy."),
+        SnackBar(
+          content: Text(
+            AppLocalization.translate(
+              "you_must_agree_to_the_terms_privacy_policy",
+            ),
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -94,8 +105,10 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Account created successfully!"),
+      SnackBar(
+        content: Text(
+          AppLocalization.translate("account_created_successfully"),
+        ),
         backgroundColor: Colors.green,
       ),
     );
@@ -134,7 +147,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   const Spacer(),
 
                   Text(
-                    "Register",
+                    AppLocalization.translate("register"),
 
                     style: TextStyle(
                       fontSize: screenWidth * 0.06,
@@ -159,8 +172,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                   children: [
                     Text(
-                      "Create your account",
-
+                AppLocalization.translate("create_your_account"),
                       style: TextStyle(
                         fontSize: screenWidth * 0.07,
                         fontWeight: FontWeight.w600,
@@ -169,9 +181,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
                     const SizedBox(height: 8),
 
-                    const Text(
-                      "Join the GEM Smart Guide experience.",
-
+                     Text(
+                        AppLocalization.translate("join_the_gem_smart_guide_experience"),
                       style: TextStyle(color: Colors.black54),
                     ),
 
@@ -199,19 +210,16 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: Column(
                         children: [
                           CustomTextField(
-                            label: "Full Name",
-
-                            hint: "Enter your full name",
-
+                      label: AppLocalization.translate("full_name"),
+                        hint: AppLocalization.translate("enter_your_full_name"),
                             onChanged: (val) => setState(() => _fullName = val),
                           ),
 
                           SizedBox(height: screenHeight * 0.025),
 
                           CustomTextField(
-                            label: "Email address",
-
-                            hint: "example@mail.com",
+                              label: AppLocalization.translate("email_address"),
+                              hint: AppLocalization.translate("enter_your_email"),
 
                             onChanged: (val) => setState(() => _email = val),
                           ),
@@ -219,10 +227,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           SizedBox(height: screenHeight * 0.025),
 
                           CustomTextField(
-                            label: "Password",
-
-                            hint: "Enter your password",
-
+                              label: AppLocalization.translate("password"),
+                              hint: AppLocalization.translate("enter_your_password"),
                             obscure: _obscurePassword,
 
                             onChanged: (val) => setState(() => _password = val),
@@ -240,8 +246,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             alignment: Alignment.centerLeft,
 
                             child: Text(
-                              "Password Strength",
-
+                              AppLocalization.translate("password_strength"),
                               style: TextStyle(
                                 fontSize: screenWidth * 0.04,
                                 fontWeight: FontWeight.bold,
@@ -256,9 +261,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           SizedBox(height: screenHeight * 0.025),
 
                           CustomTextField(
-                            label: "Confirm Password",
-
-                            hint: "Re-enter your password",
+                              label: AppLocalization.translate("confirm_password"),
+                              hint: AppLocalization.translate("re_enter_your_password"),
 
                             obscure: _obscureConfirmPassword,
 
@@ -293,17 +297,18 @@ class _RegisterPageState extends State<RegisterPage> {
 
                               Expanded(
                                 child: RichText(
-                                  text: const TextSpan(
+                                  text:  TextSpan(
                                     style: TextStyle(
                                       color: Colors.black54,
                                       fontSize: 14,
                                     ),
 
                                     children: [
-                                      TextSpan(text: "I agree to the "),
+                                      TextSpan(  text: AppLocalization.translate("i_agree_to_the"),
+                                      ),
 
                                       TextSpan(
-                                        text: "Terms of Service",
+                                        text: AppLocalization.translate("terms_of_service"),
 
                                         style: TextStyle(
                                           color: Color(0xFFC9A24D),
@@ -312,10 +317,11 @@ class _RegisterPageState extends State<RegisterPage> {
                                         ),
                                       ),
 
-                                      TextSpan(text: " and "),
+                                      TextSpan(  text: AppLocalization.translate("and"),
+                                      ),
 
                                       TextSpan(
-                                        text: "Privacy Policy.",
+                                        text: AppLocalization.translate("privacy_policy"),
 
                                         style: TextStyle(
                                           color: Color(0xFFC9A24D),
@@ -333,8 +339,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           SizedBox(height: screenHeight * 0.03),
 
                           CustomActionButton(
-                            text: "Create Account",
-
+                              text: AppLocalization.translate("create_account"),
                             onTap: () => _createAccount(context),
                           ),
                         ],
@@ -353,16 +358,15 @@ class _RegisterPageState extends State<RegisterPage> {
                               fontSize: screenWidth * 0.04,
                               fontWeight: FontWeight.bold,
                             ),
-
-                            children: const [
+                            children:  [
                               TextSpan(
-                                text: "Already have an account? ",
+                                text: AppLocalization.translate("already_have_an_account"),
 
                                 style: TextStyle(color: Colors.black),
                               ),
 
                               TextSpan(
-                                text: "Sign In",
+                                text: AppLocalization.translate("sign_in"),
 
                                 style: TextStyle(
                                   color: Color(0xFFC9A24D),

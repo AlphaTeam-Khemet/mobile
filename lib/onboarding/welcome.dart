@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../localization/app_localization.dart';
 import '../main_tab_home/main_tab_home.dart';
 import 'onboarding1.dart';
 import '../auth/signin.dart';
@@ -73,8 +74,8 @@ class WelcomePage extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const SizedBox(height: 12),
-                  const Text(
-                    "Explore thousands of years of history with\n your personal AI guide. Translate hieroglyphs\n and uncover stories instantly.",
+                  Text(
+                    AppLocalization.translate("welcome_description"),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -85,13 +86,13 @@ class WelcomePage extends StatelessWidget {
                   const SizedBox(height: 35),
 
                   CustomActionButton(
-                    text: "Sign In",
+                    text: AppLocalization.translate("sign_in"),
                     onTap: () => _goToSignIn(context),
                   ),
                   const SizedBox(height: 16),
 
                   CustomActionButton(
-                    text: "Continue as Guest",
+                    text: AppLocalization.translate("continue_as_guest"),
 
                     onTap: () {
                       Navigator.pushReplacement(
@@ -117,12 +118,12 @@ class WelcomePage extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                         children: [
-                          const TextSpan(
-                            text: "Don’t have an account? ",
+                           TextSpan(
+                            text: AppLocalization.translate("dont_have_account"),
                             style: TextStyle(color: Colors.black87),
                           ),
-                          const TextSpan(
-                            text: "Register",
+                           TextSpan(
+                            text: AppLocalization.translate("register"),
                             style: TextStyle(
                               color: Color(0xFFC9A24D),
                               fontWeight: FontWeight.bold,

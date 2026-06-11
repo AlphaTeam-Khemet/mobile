@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../forgot_password/forgot_password.dart';
-import '../home/home_screen.dart';
+import '../localization/app_localization.dart';
 import '../main_tab_home/main_tab_home.dart';
 import '../shared_widgets/custom_text_field.dart';
 import 'register.dart';
@@ -32,8 +32,8 @@ class _SignInPageState extends State<SignInPage> {
 
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Email and Password cannot be empty."),
+        SnackBar(
+          content: Text(AppLocalization.translate("email_and_password_cannot_be_empty")),
           backgroundColor: Colors.red,
         ),
       );
@@ -78,7 +78,7 @@ class _SignInPageState extends State<SignInPage> {
                   ),
                   const Spacer(),
                   Text(
-                    "Sign In",
+                    AppLocalization.translate("sign_in"),
                     style: TextStyle(
                       fontSize: screenWidth * 0.07,
                       fontWeight: FontWeight.bold,
@@ -88,6 +88,7 @@ class _SignInPageState extends State<SignInPage> {
                 ],
               ),
             ),
+
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(
@@ -98,16 +99,19 @@ class _SignInPageState extends State<SignInPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Welcome back",
+                      AppLocalization.translate("welcome_back"),
                       style: TextStyle(
                         fontSize: screenWidth * 0.08,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
+
                     const SizedBox(height: 8),
+
                     Text(
-                      "Sign in to continue your journey through history.",
-                      style: TextStyle(color: Colors.black54),
+                      AppLocalization.translate(
+                          "sign_in_to_continue_your_journey_through_history"),
+                      style: const TextStyle(color: Colors.black54),
                     ),
 
                     SizedBox(height: screenHeight * 0.07),
@@ -115,15 +119,7 @@ class _SignInPageState extends State<SignInPage> {
                     Container(
                       padding: EdgeInsets.all(screenWidth * 0.06),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.white,
-                            Colors.white.withOpacity(0.9),
-                            Colors.white.withOpacity(0.8),
-                          ],
-                        ),
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
@@ -136,37 +132,42 @@ class _SignInPageState extends State<SignInPage> {
                       child: Column(
                         children: [
                           CustomTextField(
-                            label: "Email address",
-                            hint: "Enter your email",
+                            label: AppLocalization.translate("email_address"),
+                            hint: AppLocalization.translate("enter_your_email"),
                             controller: _emailController,
                           ),
+
                           SizedBox(height: screenHeight * 0.035),
 
                           CustomTextField(
-                            label: "Password",
-                            hint: "Enter your password",
+                            label: AppLocalization.translate("password"),
+                            hint: AppLocalization.translate("enter_your_password"),
                             obscure: _obscurePassword,
                             toggleVisibility: () => setState(
-                              () => _obscurePassword = !_obscurePassword,
+                                  () => _obscurePassword = !_obscurePassword,
                             ),
                             controller: _passwordController,
                           ),
+
                           SizedBox(height: screenHeight * 0.015),
 
                           Align(
                             alignment: Alignment.centerRight,
                             child: TextButton(
                               onPressed: () => _goToForgotPassword(context),
-                              child: const Text(
-                                "Forgot password?",
-                                style: TextStyle(color: Color(0xFF8B6F4E)),
+                              child: Text(
+                                AppLocalization.translate("forgot_password"),
+                                style: const TextStyle(
+                                  color: Color(0xFF8B6F4E),
+                                ),
                               ),
                             ),
                           ),
+
                           SizedBox(height: screenHeight * 0.03),
 
                           CustomActionButton(
-                            text: "Sign In",
+                            text: AppLocalization.translate("sign_in"),
                             onTap: () => _goToHome(context),
                           ),
                         ],
@@ -176,21 +177,19 @@ class _SignInPageState extends State<SignInPage> {
                     SizedBox(height: screenHeight * 0.12),
 
                     CustomActionButton(
-                      text: "Continue as Guest",
-
+                      text: AppLocalization.translate("continue_as_guest"),
                       onTap: () {
                         Navigator.pushReplacement(
                           context,
-
                           MaterialPageRoute(
                             builder: (_) =>
-                                const MainNavigationPage(isGuest: true),
+                            const MainNavigationPage(isGuest: true),
                           ),
                         );
                       },
-
                       outlined: true,
                     ),
+
                     const SizedBox(height: 10),
 
                     Center(
@@ -202,14 +201,15 @@ class _SignInPageState extends State<SignInPage> {
                               fontSize: screenWidth * 0.04,
                               fontWeight: FontWeight.bold,
                             ),
-                            children: const [
+                            children: [
                               TextSpan(
-                                text: "Don’t have an account? ",
-                                style: TextStyle(color: Colors.black87),
+                                text: AppLocalization.translate(
+                                    "don_t_have_an_account"),
+                                style: const TextStyle(color: Colors.black87),
                               ),
                               TextSpan(
-                                text: "Register",
-                                style: TextStyle(
+                                text: " ${AppLocalization.translate("register")}",
+                                style: const TextStyle(
                                   color: Color(0xFFC9A24D),
                                   fontWeight: FontWeight.bold,
                                 ),

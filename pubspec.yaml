@@ -54,6 +54,9 @@ dev_dependencies:
   video_player: ^2.8.2
   dio: ^5.8.0+1
   shared_preferences: ^2.5.3
+  url_launcher: ^6.3.0
+
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -64,6 +67,7 @@ flutter:
     - assets/image/
     - assets/icons/
     - assets/video/
+    - assets/languages/
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../localization/app_localization.dart';
 import 'artifact_details_page.dart';
 import '../chat/chat_bot_page.dart';
 
@@ -119,10 +120,10 @@ class _FavoritesPageState extends State<FavoritesPage> {
                   Column(
                     crossAxisAlignment:
                     CrossAxisAlignment.start,
-                    children: const [
+                    children:  [
 
                       Text(
-                        "Favorites",
+                        AppLocalization.translate("favorites"),
                         style: TextStyle(
                           fontSize: 34,
                           fontWeight:
@@ -135,7 +136,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                       SizedBox(height: 6),
 
                       Text(
-                        "My Collection",
+                        AppLocalization.translate("my_collection"),
                         style: TextStyle(
                           fontSize: 16,
                           color:
@@ -167,9 +168,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
                       searchQuery = value;
                     });
                   },
-                  decoration: const InputDecoration(
+                  decoration:  InputDecoration(
                     hintText:
-                    "Search favorites...",
+                    AppLocalization.translate("search_favorites_hint"),
                     prefixIcon:
                     Icon(Icons.search),
                     border: InputBorder.none,
@@ -266,7 +267,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     mainAxisAlignment:
                     MainAxisAlignment
                         .center,
-                    children: const [
+                    children:  [
                       Icon(
                         Icons
                             .favorite_border,
@@ -277,7 +278,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                       SizedBox(
                           height: 14),
                       Text(
-                        "No favorites found",
+                        AppLocalization.translate("no_favorites_found"),
                         style:
                         TextStyle(
                           fontSize:
@@ -416,10 +417,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
                         ScaffoldMessenger.of(
                             context)
                             .showSnackBar(
-                          const SnackBar(
+                           SnackBar(
                             content: Text(
-                              "Removed from Favorites 💔",
-                            ),
+                                AppLocalization.translate("removed_from_favorites"),                            ),
                             duration:
                             Duration(
                               seconds: 1,

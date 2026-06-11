@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../localization/app_localization.dart';
 import '../shared_widgets/custom_action_button.dart';
 import 'create_new_password.dart';
 
@@ -124,7 +125,7 @@ class _VerificationCodePageState
                 height: screenHeight * 0.015,
               ),
 
-              const Center(
+               Center(
 
                 child: Column(
 
@@ -132,8 +133,7 @@ class _VerificationCodePageState
 
                     Text(
 
-                      "Verification Code",
-
+                AppLocalization.translate("verification_code"),
                       style: TextStyle(
 
                         fontSize: 24,
@@ -147,9 +147,9 @@ class _VerificationCodePageState
                     SizedBox(height: 8),
 
                     Text(
-
-                      "Enter the verification code sent to your email.",
-
+                        AppLocalization.translate(
+                          "enter_the_verification_code_sent_to_your_email",
+                        ),
                       textAlign: TextAlign.center,
 
                       style: TextStyle(
@@ -274,8 +274,7 @@ class _VerificationCodePageState
 
                       child: Text(
 
-                        "RESEND CODE",
-
+                        AppLocalization.translate("resend_code"),
                         style: TextStyle(
 
                           fontSize: 18,
@@ -298,7 +297,7 @@ class _VerificationCodePageState
 
                       _canResend
 
-                          ? "Ready to resend"
+                          ? AppLocalization.translate("ready_to_resend")
 
                           : "00:${_secondsRemaining.toString().padLeft(2, '0')}",
 
@@ -319,8 +318,7 @@ class _VerificationCodePageState
 
               CustomActionButton(
 
-                text: "Verify Code",
-
+                text: AppLocalization.translate("verify_code"),
                 onTap: () =>
                     _verifyCode(context),
               ),

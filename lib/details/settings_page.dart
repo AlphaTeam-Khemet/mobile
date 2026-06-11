@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-
+import '../localization/app_localization.dart';
+import '../shared_widgets/language_manager.dart';
+import 'package:url_launcher/url_launcher.dart';
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
 
@@ -18,12 +20,42 @@ class _SettingsPageState extends State<SettingsPage> {
     {"code": "ru", "label": "🇷🇺 Русский"},
   ];
 
-  String selectedLanguage = "🇬🇧 English";
 
 
   bool notificationsEnabled = true;
 
   String selectedTextSize = "Medium";
+  Future<void> _openFacebook() async {
+    final Uri url =
+    Uri.parse('https://www.facebook.com/share/1EnoZDpBSH/');
+
+    await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    );
+  }
+
+  Future<void> _openInstagram() async {
+    final Uri url = Uri.parse(
+      'https://www.instagram.com/khemet.e2026?igsh=MWZ3MGtrdGV0NW9oYQ==',
+    );
+
+    await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    );
+  }
+
+  Future<void> _openYoutube() async {
+    final Uri url = Uri.parse(
+      'https://www.youtube.com/channel/UCmbki6HSM_gVFTnUcOHLhFg',
+    );
+
+    await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +86,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   const SizedBox(width: 145,),
 
-                  const Text(
-                    "Settings",
-
+                   Text(
+                    AppLocalization.translate("settings"),
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w800,
@@ -118,11 +149,10 @@ class _SettingsPageState extends State<SettingsPage> {
                       crossAxisAlignment:
                       CrossAxisAlignment.start,
 
-                      children: const [
+                      children:  [
 
                         Text(
-                          "Alpha Team",
-
+                          AppLocalization.translate("alpha_team"),
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
@@ -133,8 +163,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         SizedBox(height: 4),
 
                         Text(
-                          "KHEMET Member",
-
+                            AppLocalization.translate("khemet_member"),
                           style: TextStyle(
                             color: Color(0xFFC9A24D),
                             fontWeight: FontWeight.w600,
@@ -149,9 +178,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
               const SizedBox(height: 28),
 
-              const Text(
-                "GENERAL PREFERENCES",
-
+               Text(
+                  AppLocalization.translate("general_preferences"),
                 style: TextStyle(
                   color: Color(0xFFA68B63),
                   fontWeight: FontWeight.w800,
@@ -185,10 +213,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
                           const SizedBox(width: 16),
 
-                          const Expanded(
+                           Expanded(
                             child: Text(
-                              "Current Language",
-
+                              AppLocalization.translate("current_language"),
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -197,34 +224,22 @@ class _SettingsPageState extends State<SettingsPage> {
                           ),
 
                           DropdownButtonHideUnderline(
-
                             child: DropdownButton<String>(
-
-                              value: selectedLanguage,
-
-                              icon: const Icon(
-                                Icons.keyboard_arrow_down_rounded,
-                              ),
-
-                              borderRadius:
-                              BorderRadius.circular(16),
+                              value: LanguageManager.currentLanguage.value,
 
                               items: languages.map((language) {
-
-                                return DropdownMenuItem(
-                                  value: language["label"],
-
-                                  child: Text(
-                                    language["label"]!,
-                                  ),
+                                return DropdownMenuItem<String>(
+                                  value: language["code"],
+                                  child: Text(language["label"]!),
                                 );
                               }).toList(),
 
-                              onChanged: (value) {
+                              onChanged: (value) async {
+                                if (value == null) return;
 
-                                setState(() {
-                                  selectedLanguage = value!;
-                                });
+                                await LanguageManager.changeLanguage(value);
+
+                                setState(() {});
                               },
                             ),
                           ),
@@ -249,10 +264,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
                           const SizedBox(width: 16),
 
-                          const Expanded(
+                           Expanded(
                             child: Text(
-                              "Notifications",
-
+                              AppLocalization.translate("notifications"),
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -297,9 +311,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
                               const SizedBox(width: 16),
 
-                              const Text(
-                                "Accessibility",
-
+                               Text(
+                                AppLocalization.translate("accessibility"),
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
@@ -310,9 +323,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
                           const SizedBox(height: 22),
 
-                          const Text(
-                            "Text Size",
-
+                           Text(
+                            AppLocalization.translate("text_size"),
                             style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w500,
@@ -336,16 +348,15 @@ class _SettingsPageState extends State<SettingsPage> {
                               children: [
 
                                 _buildTextSizeButton(
-                                  "Small",
+                                  AppLocalization.translate("small"),
                                 ),
 
                                 _buildTextSizeButton(
-                                  "Medium",
+                                  AppLocalization.translate("medium"),
                                 ),
 
                                 _buildTextSizeButton(
-                                  "Large",
-                                ),
+                                  AppLocalization.translate("large"),                                ),
                               ],
                             ),
                           ),
@@ -397,10 +408,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
                     const SizedBox(height: 18),
 
-                    const Center(
+                     Center(
                       child: Text(
-                        "Privacy & Security",
-
+                        AppLocalization.translate("large"),
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w800,
@@ -411,9 +421,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
                     const SizedBox(height: 12),
 
-                    const Text(
-                      "Keep your Khemet account safe Never share your private information, password, or verification codes with anyone.",
-
+                     Text(
+                        AppLocalization.translate(
+                          "keep_your_khemet_account_safe_never_share_your_private_information_password_or_v",
+                        ),
                       style: TextStyle(
                         color: Color(0xff6F6F6F),
                         height: 1.4,
@@ -451,9 +462,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
                           const SizedBox(width: 12),
 
-                          const Text(
-                            "Delete account",
-
+                           Text(
+                            AppLocalization.translate("delete_account"),
                             style: TextStyle(
                               color: Colors.black87,
                               fontWeight: FontWeight.w600,
@@ -471,24 +481,32 @@ class _SettingsPageState extends State<SettingsPage> {
 
 
               Center(
-
                 child: Row(
-                  mainAxisAlignment:
-                  MainAxisAlignment.center,
-
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
 
-                    _buildSocialIcon(Icons.facebook),
-
-                    const SizedBox(width: 16),
-
-                    _buildSocialIcon(
-                      Icons.camera_alt_outlined,
+                    GestureDetector(
+                      onTap: _openFacebook,
+                      child: _buildSocialIcon(Icons.facebook),
                     ),
 
                     const SizedBox(width: 16),
 
-                    _buildSocialIcon(Icons.play_arrow),
+                    GestureDetector(
+                      onTap: _openInstagram,
+                      child: _buildSocialIcon(
+                        Icons.camera_alt_outlined,
+                      ),
+                    ),
+
+                    const SizedBox(width: 16),
+
+                    GestureDetector(
+                      onTap: _openYoutube,
+                      child: _buildSocialIcon(
+                        Icons.play_arrow,
+                      ),
+                    ),
                   ],
                 ),
               ),

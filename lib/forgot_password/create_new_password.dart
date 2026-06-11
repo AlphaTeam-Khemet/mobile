@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../auth/signin.dart';
+import '../localization/app_localization.dart';
 import '../shared_widgets/custom_text_field.dart';
 import '../shared_widgets/custom_action_button.dart';
 
@@ -41,8 +42,12 @@ class _CreateNewPasswordPageState extends State<CreateNewPasswordPage> {
 
     if (newPassword.isEmpty || confirmPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Password fields cannot be empty."),
+         SnackBar(
+          content: Text(
+            AppLocalization.translate(
+              "password_fields_cannot_be_empty",
+            ),
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -51,8 +56,12 @@ class _CreateNewPasswordPageState extends State<CreateNewPasswordPage> {
 
     if (newPassword != confirmPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Passwords do not match."),
+         SnackBar(
+           content: Text(
+             AppLocalization.translate(
+               "passwords_do_not_match",
+             ),
+           ),
           backgroundColor: Colors.red,
         ),
       );
@@ -60,8 +69,12 @@ class _CreateNewPasswordPageState extends State<CreateNewPasswordPage> {
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Password updated successfully."),
+       SnackBar(
+        content: Text(
+          AppLocalization.translate(
+            "password_updated_successfully",
+          ),
+        ),
         backgroundColor: Colors.green,
       ),
     );
@@ -102,12 +115,11 @@ class _CreateNewPasswordPageState extends State<CreateNewPasswordPage> {
               ),
               SizedBox(height: screenHeight * 0.04),
 
-              const Center(
+               Center(
                 child: Column(
                   children: [
                     Text(
-                      "CREATE NEW PASSWORD",
-                      style: TextStyle(
+                AppLocalization.translate("create_new_password"),                      style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
@@ -115,8 +127,8 @@ class _CreateNewPasswordPageState extends State<CreateNewPasswordPage> {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      "Your new password must be different from the previous one.",
-                      style: TextStyle(
+                      AppLocalization.translate(
+                        "your_new_password_must_be_different_from_the_previous_one"),                      style: TextStyle(
                         fontSize: 16,
                         color: Colors.black54,
                       ),
@@ -128,8 +140,8 @@ class _CreateNewPasswordPageState extends State<CreateNewPasswordPage> {
               SizedBox(height: screenHeight * 0.04),
 
               CustomTextField(
-                label: "NEW PASSWORD",
-                hint: "Enter your new password",
+                label: AppLocalization.translate("new_password"),
+                hint: AppLocalization.translate("enter_your_new_password"),
                 obscure: _obscureNewPassword,
                 onChanged: _checkPasswordStrength,
                 toggleVisibility: () =>
@@ -155,10 +167,10 @@ class _CreateNewPasswordPageState extends State<CreateNewPasswordPage> {
                   const SizedBox(width: 9),
                   Text(
                     _strength < 0.5
-                        ? "WEAK"
+                        ? AppLocalization.translate("weak")
                         : _strength < 0.75
-                        ? "MEDIUM"
-                        : "STRONG",
+                        ? AppLocalization.translate("medium")
+                        : AppLocalization.translate("strong"),
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.black54,
@@ -169,8 +181,8 @@ class _CreateNewPasswordPageState extends State<CreateNewPasswordPage> {
               SizedBox(height: screenHeight * 0.013),
 
               CustomTextField(
-                label: "CONFIRM PASSWORD",
-                hint: "Repeat your new password",
+                label: AppLocalization.translate("confirm_password"),
+                hint: AppLocalization.translate("repeat_your_new_password"),
                 obscure: _obscureConfirmPassword,
                 toggleVisibility: () => setState(
                         () => _obscureConfirmPassword = !_obscureConfirmPassword),
@@ -178,7 +190,7 @@ class _CreateNewPasswordPageState extends State<CreateNewPasswordPage> {
               SizedBox(height: screenHeight * 0.05),
 
               CustomActionButton(
-                text: "Save Password",
+                text: AppLocalization.translate("save_password"),
                 onTap: () => _savePassword(context),
               ),
               SizedBox(height: screenHeight * 0.02),
@@ -192,8 +204,8 @@ class _CreateNewPasswordPageState extends State<CreateNewPasswordPage> {
                           (route) => false,
                     );
                   },
-                  child: const Text(
-                    "Back to Sign In",
+                  child: Text(
+                    AppLocalization.translate("back_to_sign_in"),
                     style: TextStyle(
                       color: Colors.black54,
                       fontWeight: FontWeight.bold,

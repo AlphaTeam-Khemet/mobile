@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
+import '../localization/app_localization.dart';
+
 class StartTourPage extends StatefulWidget {
   const StartTourPage({Key? key}) : super(key: key);
 
@@ -116,12 +118,9 @@ class _StartTourPageState extends State<StartTourPage> {
                                 const Spacer(),
 
                                 Column(
-                                  children: const [
-
-                                    Text(
-                                      "KHEMET",
-
-                                      style: TextStyle(
+                                  children:  [
+                                      Text(
+                                        AppLocalization.translate("khemet"),                                      style: TextStyle(
                                         color: Color(0xFFC9A24D),
                                         fontSize: 24,
                                         fontWeight: FontWeight.w700,
@@ -132,7 +131,7 @@ class _StartTourPageState extends State<StartTourPage> {
                                     SizedBox(height: 2),
 
                                     Text(
-                                      "START TOUR",
+                                      AppLocalization.translate("start_tour"),
 
                                       style: TextStyle(
                                         color: Colors.white70,
@@ -376,9 +375,9 @@ class _StartTourPageState extends State<StartTourPage> {
 
                             const SizedBox(height: 26),
 
-                            const Text(
-                              "Discover Ancient Egypt\nThrough Khemet",
-
+                             Text(
+                                AppLocalization.translate("discover_the_n") +
+                                    AppLocalization.translate("ancient_egypt"),
                               style: TextStyle(
                                 color: Color(0xFFC9A24D),
                                 fontSize: 34,
@@ -389,9 +388,8 @@ class _StartTourPageState extends State<StartTourPage> {
 
                             const SizedBox(height: 18),
 
-                            const Text(
-                              "Your Smart Guide khemet",
-
+                              Text(
+                                AppLocalization.translate("discover_ancient_egypt_through_khemet"),
                               style: TextStyle(
                                 color: Colors.white,
                                 letterSpacing: 3,
@@ -419,8 +417,8 @@ class _StartTourPageState extends State<StartTourPage> {
 
                                     children: [
 
-                                      const Text(
-                                        "DURATION",
+                                      Text(
+                                        AppLocalization.translate("duration"),
 
                                         style: TextStyle(
                                           color: Colors.white54,
@@ -452,10 +450,10 @@ class _StartTourPageState extends State<StartTourPage> {
                                     crossAxisAlignment:
                                     CrossAxisAlignment.start,
 
-                                    children: const [
+                                    children:  [
 
                                       Text(
-                                        "QUALITY",
+                                        AppLocalization.translate("quality"),
 
                                         style: TextStyle(
                                           color: Colors.white54,
@@ -466,7 +464,7 @@ class _StartTourPageState extends State<StartTourPage> {
                                       SizedBox(height: 6),
 
                                       Text(
-                                        "4K UHD",
+                                        AppLocalization.translate("4k_uhd"),
 
                                         style: TextStyle(
                                           color: Colors.white,

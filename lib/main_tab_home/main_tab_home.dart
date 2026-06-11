@@ -3,6 +3,7 @@ import '../details/favorite_page.dart';
 import '../details/profile_page.dart';
 import '../details/settings_page.dart';
 import '../home/home_screen.dart';
+import '../localization/app_localization.dart';
 import '../translate/translate_page.dart';
 import '../widgets/app_colors.dart';
 class MainNavigationPage extends StatefulWidget {
@@ -32,10 +33,11 @@ class _MainNavigationPageState
 
       ScaffoldMessenger.of(context).showSnackBar(
 
-        const SnackBar(
-
+         SnackBar(
           content: Text(
-            "Please register first to use Translate feature.",
+            AppLocalization.translate(
+              "please_register_first_to_use_translate_feature",
+            ),
           ),
 
           backgroundColor: Colors.red,
@@ -70,6 +72,7 @@ class _MainNavigationPageState
 
       ProfilePage(
         favoriteCount: favorites.length,
+        isGuest: widget.isGuest,
       ),
 
       const SettingsPage(),
@@ -126,13 +129,13 @@ class _MainNavigationPageState
 
               _buildNavItem(
                 'assets/icons/Home.png',
-                'Home',
+                AppLocalization.translate("home"),
                 0,
               ),
 
               _buildNavItem(
                 'assets/icons/favorite.png',
-                'Favorites',
+                AppLocalization.translate("favorites"),
                 1,
               ),
 
@@ -140,13 +143,13 @@ class _MainNavigationPageState
 
               _buildNavItem(
                 'assets/icons/profile.png',
-                'Profile',
+                AppLocalization.translate("profile"),
                 2,
               ),
 
               _buildNavItem(
                 'assets/icons/settings.png',
-                'Settings',
+                AppLocalization.translate("settings"),
                 3,
               ),
             ],

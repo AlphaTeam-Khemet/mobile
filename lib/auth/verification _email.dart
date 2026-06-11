@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../auth/register.dart';
+import '../localization/app_localization.dart';
 import '../main_tab_home/main_tab_home.dart';
 
 class VerificationEmailPage extends StatefulWidget {
@@ -34,9 +35,9 @@ class _VerificationEmailPageState
   Future<void> verifyEmail() async {
     if (otp.length != 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+         SnackBar(
           content:
-          Text("Please enter the 6 digit code"),
+          Text(AppLocalization.translate("please_enter_the_6_digit_code"),),
         ),
       );
       return;
@@ -53,10 +54,9 @@ class _VerificationEmailPageState
     if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
+       SnackBar(
         content:
-        Text("Email verified successfully"),
-      ),
+        Text(AppLocalization.translate("email_verified_successfully")    )  ),
     );
 
     Navigator.pushAndRemoveUntil(
@@ -71,10 +71,9 @@ class _VerificationEmailPageState
 
   Future<void> resendCode() async {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
+       SnackBar(
         content:
-        Text("Verification code resent"),
-      ),
+        Text(AppLocalization.translate("verification_code_resent")) ),
     );
   }
 
@@ -162,8 +161,8 @@ class _VerificationEmailPageState
 
               SizedBox(height: height * 0.01),
 
-              const Text(
-                "Verification Email",
+               Text(
+                AppLocalization.translate("verification_email"),
                 style: TextStyle(
                   fontSize: 26,
                   fontWeight:
@@ -192,7 +191,8 @@ class _VerificationEmailPageState
               SizedBox(height: height * 0.03),
 
               Text(
-                "Enter the verification code sent to\n${widget.email}",
+                AppLocalization.translate("enter_the_verification_code_sent_to_n_widget_email")
+                    .replaceAll("\${widget.email}", widget.email),
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 15,
@@ -216,8 +216,8 @@ class _VerificationEmailPageState
 
               GestureDetector(
                 onTap: resendCode,
-                child: const Text(
-                  "RESEND CODE",
+                child:  Text(
+                  AppLocalization.translate("resend_code"),
                   style: TextStyle(
                     color:
                     Color(0xFFC89B3C),
@@ -257,8 +257,8 @@ class _VerificationEmailPageState
                     color:
                     Colors.white,
                   )
-                      : const Text(
-                    "Verify Code",
+                      : Text(
+                    AppLocalization.translate("verify_code"),
                     style:
                     TextStyle(
                       color:
@@ -286,8 +286,8 @@ class _VerificationEmailPageState
                         (route) => false,
                   );
                 },
-                child: const Text(
-                  "Back to Register",
+                child:
+                  Text(AppLocalization.translate("back_to_register"),
                   style: TextStyle(
                     color:
                     Colors.black54,

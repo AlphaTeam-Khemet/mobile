@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
 
+import '../localization/app_localization.dart';
+
 class TranslationResultPage extends StatelessWidget {
-  const TranslationResultPage({super.key});
+
+  final bool isHieroglyphMode;
+
+  const TranslationResultPage({
+    super.key,
+    required this.isHieroglyphMode,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -44,9 +52,10 @@ class TranslationResultPage extends StatelessWidget {
 
                   const SizedBox(width: 8),
 
-                  const Text(
-
-                    "Translation Result",
+                  Text(
+                    isHieroglyphMode
+                        ? AppLocalization.translate("translation_result")
+                        : AppLocalization.translate("artifact_information"),
 
                     style: TextStyle(
 
@@ -128,8 +137,9 @@ class TranslationResultPage extends StatelessWidget {
                           const SizedBox(width: 6),
 
                           Text(
-
-                            "DETECTED\nMEANING",
+                            isHieroglyphMode
+                                ? AppLocalization.translate("translation_result")
+                                : AppLocalization.translate("artifact_information"),
 
                             style: TextStyle(
 
@@ -151,11 +161,10 @@ class TranslationResultPage extends StatelessWidget {
 
                       const SizedBox(height: 26),
 
-                      const Text(
-
-                        "\"The King, Lord of the\n"
-                            "Two Lands, giving life\n"
-                            "like Re forever.\"",
+                      Text(
+                        isHieroglyphMode
+                            ? AppLocalization.translate("translation_text")
+                            : AppLocalization.translate("artifact_title"),
 
                         style: TextStyle(
 
@@ -187,15 +196,10 @@ class TranslationResultPage extends StatelessWidget {
 
                       const SizedBox(height: 22),
 
-                      const Text(
-
-                        "He creates the dawn and establishes\n"
-                            "the laws of Maat across the kingdom.\n"
-                            "This inscription likely dates back to\n"
-                            "the\n"
-                            "New Kingdom period, signifying royal\n"
-                            "authority and divine favor.",
-
+                      Text(
+                        isHieroglyphMode
+                            ? AppLocalization.translate("translation_description")
+                            : AppLocalization.translate("artifact_description"),
                         style: TextStyle(
 
                           fontSize: 17,
@@ -245,7 +249,7 @@ class TranslationResultPage extends StatelessWidget {
                         Navigator.pop(context);
                       },
 
-                      child: const Row(
+                      child:  Row(
 
                         mainAxisAlignment:
                         MainAxisAlignment.center,
@@ -261,8 +265,7 @@ class TranslationResultPage extends StatelessWidget {
                           SizedBox(width: 8),
 
                           Text(
-
-                            "Retry",
+                            AppLocalization.translate("retry"),
 
                             style: TextStyle(
 
@@ -309,14 +312,15 @@ class TranslationResultPage extends StatelessWidget {
                         ScaffoldMessenger.of(context)
                             .showSnackBar(
 
-                          const SnackBar(
+                           SnackBar(
 
                             backgroundColor:
                             Color(0xFFC9A24D),
 
                             content: Text(
-
-                              "Saved to Collection",
+                              AppLocalization.translate(
+                                "save_to_collection",
+                              ),
 
                               style: TextStyle(
                                 color: Colors.black,
@@ -326,7 +330,7 @@ class TranslationResultPage extends StatelessWidget {
                         );
                       },
 
-                      child: const Row(
+                      child:  Row(
 
                         mainAxisAlignment:
                         MainAxisAlignment.center,
@@ -342,8 +346,9 @@ class TranslationResultPage extends StatelessWidget {
                           SizedBox(width: 10),
 
                           Text(
-
-                            "Save to\nCollection",
+                            AppLocalization.translate(
+                              "save_to_collection",
+                            ),
 
                             textAlign: TextAlign.center,
 

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../localization/app_localization.dart';
 import 'onboarding1.dart';
+import '../shared_widgets/language_manager.dart';
 import '../shared_widgets/custom_language_dropdown.dart';
 import '../widgets/app_colors.dart';
 
@@ -73,14 +75,32 @@ class _LanguageScreenState extends State<LanguageScreen>
       String lang,
       ) {
 
+    String label = "🇬🇧 English";
+
+    switch (lang) {
+      case "ar":
+        label = "🇪🇬 العربية";
+        break;
+
+      case "de":
+        label = "🇩🇪 Deutsch";
+        break;
+
+      case "ru":
+        label = "🇷🇺 Русский";
+        break;
+
+      default:
+        label = "🇬🇧 English";
+    }
+
+    LanguageManager.currentLanguage.value = label;
+
     Future.delayed(
       const Duration(milliseconds: 300),
           () {
-
         Navigator.of(context).pushReplacement(
-
           MaterialPageRoute(
-
             builder: (_) => const Onboarding1(),
           ),
         );
@@ -171,9 +191,8 @@ class _LanguageScreenState extends State<LanguageScreen>
 
                     const SizedBox(height: 10),
 
-                    const Text(
-
-                      "Grand Egyptian Museum",
+                    Text(
+                      AppLocalization.translate("grand_egyptian_museum"),
 
                       style: TextStyle(
 
@@ -187,9 +206,8 @@ class _LanguageScreenState extends State<LanguageScreen>
 
                     const Spacer(),
 
-                    const Text(
-
-                      "Select Language",
+                    Text(
+                      AppLocalization.translate("select_language"),
 
                       style: TextStyle(
 
@@ -219,10 +237,8 @@ class _LanguageScreenState extends State<LanguageScreen>
 
                     const Spacer(),
 
-                    const Text(
-
-                      "© GEM 2026",
-
+                    Text(
+                      AppLocalization.translate("gem_2026"),
                       style: TextStyle(
 
                         color: Colors.white70,

@@ -4,6 +4,7 @@ import 'package:graduation_project/home/start_tour_page.dart';
 
 import '../chat/chat_bot_page.dart';
 import '../details/collection_page.dart';
+import '../localization/app_localization.dart';
 import '../widgets/app_colors.dart';
 
 class HomePage extends StatefulWidget {
@@ -85,9 +86,8 @@ class _HomePageState extends State<HomePage> {
             children: [
               SizedBox(height: screenHeight * 0.03),
 
-              const Text(
-                "Welcome to",
-
+               Text(
+                AppLocalization.translate("welcome_to"),
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -95,9 +95,8 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
 
-              const Text(
-                "KHEMET Smart Guide",
-
+               Text(
+                  AppLocalization.translate("khemet_smart_guide"),
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
@@ -107,8 +106,8 @@ class _HomePageState extends State<HomePage> {
 
               const SizedBox(height: 6),
 
-              const Text(
-                "Explore the treasures of ancient Egypt.",
+              Text(
+                AppLocalization.translate("explore_the_treasures_of_ancient_egypt"),
 
                 style: TextStyle(fontSize: 18, color: Colors.black54),
               ),
@@ -125,8 +124,7 @@ class _HomePageState extends State<HomePage> {
                 },
 
                 decoration: InputDecoration(
-                  hintText: "Search artifacts",
-
+                  hintText: AppLocalization.translate("search_artifacts"),
                   prefixIcon: const Icon(Icons.search, color: Colors.black54),
 
                   filled: true,
@@ -196,7 +194,7 @@ class _HomePageState extends State<HomePage> {
                               RichText(
                                 textAlign: TextAlign.center,
 
-                                text: const TextSpan(
+                                text:  TextSpan(
                                   style: TextStyle(
                                     fontSize: 22,
                                     fontWeight: FontWeight.bold,
@@ -205,18 +203,15 @@ class _HomePageState extends State<HomePage> {
 
                                   children: [
                                     TextSpan(
-                                      text: 'Discover the\n',
-                                      style: TextStyle(color: Colors.white),
+                                      text: AppLocalization.translate("discover_the_n"),                                      style: TextStyle(color: Colors.white),
                                     ),
 
                                     TextSpan(
-                                      text: 'Wonders of ',
-                                      style: TextStyle(color: Colors.white),
+                                      text: AppLocalization.translate("wonders_of"),                                      style: TextStyle(color: Colors.white),
                                     ),
 
                                     TextSpan(
-                                      text: 'Ancient Egypt',
-                                      style: TextStyle(
+                                      text: AppLocalization.translate("ancient_egypt"),                                      style: TextStyle(
                                         color: Color(0xFFC9A24D),
                                       ),
                                     ),
@@ -262,9 +257,9 @@ class _HomePageState extends State<HomePage> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
 
-                                  children: const [
+                                  children: [
                                     Text(
-                                      "Start Tour",
+                                      AppLocalization.translate("start_tour"),
 
                                       style: TextStyle(
                                         color: Colors.white,
@@ -296,8 +291,8 @@ class _HomePageState extends State<HomePage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    "Collection",
+                   Text(
+                    AppLocalization.translate("collection"),
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
@@ -315,8 +310,8 @@ class _HomePageState extends State<HomePage> {
                         ),
                       );
                     },
-                    child: const Text(
-                      "View All",
+                    child: Text(
+                      AppLocalization.translate("view_all"),
                       style: TextStyle(
                         color: Color(0xFFC9A24D),
                         fontWeight: FontWeight.w800,
@@ -370,9 +365,13 @@ class _HomePageState extends State<HomePage> {
   Widget _buildArtifactCard(Map<String, dynamic> artifact) {
     final String image = artifact["image"];
 
-    final String title = artifact["title"];
+    final String title = AppLocalization.translate(
+      artifact["title"].toString(),
+    );
 
-    final String subtitle = artifact["subtitle"];
+    final String subtitle = AppLocalization.translate(
+      artifact["subtitle"].toString(),
+    );
 
     final List<String> tags = List<String>.from(artifact["tags"]);
 
@@ -462,9 +461,10 @@ class _HomePageState extends State<HomePage> {
                             );
 
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Removed from Favorites 💔"),
-                              ),
+                               SnackBar(
+                                content: Text(
+                                  AppLocalization.translate("removed_from_favorites"),
+                                ),                              ),
                             );
                           } else {
                             widget.favorites.add({
@@ -475,9 +475,10 @@ class _HomePageState extends State<HomePage> {
                             });
 
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Added to Favorites ❤️"),
-                              ),
+                               SnackBar(
+                                content: Text(
+                                  AppLocalization.translate("added_to_favorites"),
+                                ),                              ),
                             );
                           }
                         });
@@ -565,7 +566,7 @@ class _HomePageState extends State<HomePage> {
                             ),
 
                             child: Text(
-                              tag,
+                              AppLocalization.translate(tag.toLowerCase()),
 
                               style: const TextStyle(
                                 fontSize: 11,

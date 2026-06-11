@@ -4,6 +4,7 @@ import 'onboarding1.dart';
 import 'onboarding2.dart';
 import '../widgets/app_colors.dart';
 import '../widgets/app_text_styles.dart';
+import '../localization/app_localization.dart';
 
 class Onboarding3 extends StatefulWidget {
   const Onboarding3({Key? key}) : super(key: key);
@@ -26,7 +27,10 @@ class _Onboarding3State extends State<Onboarding3> {
     }
   }
 
-  void _nextPage() => Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const WelcomePage()));
+  void _nextPage() => Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (_) => const WelcomePage()),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +44,9 @@ class _Onboarding3State extends State<Onboarding3> {
             right: 20,
             child: TextButton(
               onPressed: _nextPage,
-              child: const Text(
-                "Skip",
-                style: TextStyle(
+              child: Text(
+                AppLocalization.translate("skip"),
+                style: const TextStyle(
                   color: AppColors.secondary,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -75,30 +79,33 @@ class _Onboarding3State extends State<Onboarding3> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    "Translate Hieroglyphs",
-                    style: TextStyle(
+
+                  Text(
+                    AppLocalization.translate("translate_hieroglyphs"),
+                    style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const Text(
-                    "Using your camera",
-                    style: TextStyle(
+
+                  Text(
+                    AppLocalization.translate("using_your_camera"),
+                    style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w600,
                       color: Colors.black87,
                     ),
                     textAlign: TextAlign.center,
                   ),
+
                   const SizedBox(height: 20),
-                  const Text(
-                    "Point your camera at ancient inscriptions to reveal their hidden meanings using our advanced AI translator.",
+
+                  Text(
+                    AppLocalization.translate("hieroglyphs_description"),
                     style: AppTextStyles.body,
                     textAlign: TextAlign.center,
-
                   ),
 
                   const SizedBox(height: 20),
@@ -134,10 +141,10 @@ class _Onboarding3State extends State<Onboarding3> {
                         color: AppColors.primary,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Text(
-                          "Get Started",
-                          style: TextStyle(
+                          AppLocalization.translate("get_started"),
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,

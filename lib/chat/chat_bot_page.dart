@@ -1,53 +1,37 @@
 import 'package:flutter/material.dart';
 
+import '../localization/app_localization.dart';
+
 class ChatItem {
   String title;
 
   List<Map<String, dynamic>> messages;
 
-  ChatItem({
-    required this.title,
-    required this.messages,
-  });
+  ChatItem({required this.title, required this.messages});
 }
 
 class ChatBotPage extends StatefulWidget {
-
   final String? artifactName;
 
-  const ChatBotPage({
-    Key? key,
-    this.artifactName,
-  }) : super(key: key);
+  const ChatBotPage({Key? key, this.artifactName}) : super(key: key);
 
   @override
-  State<ChatBotPage> createState() =>
-      _ChatBotPageState();
+  State<ChatBotPage> createState() => _ChatBotPageState();
 }
 
-class _ChatBotPageState
-    extends State<ChatBotPage> {
+class _ChatBotPageState extends State<ChatBotPage> {
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final GlobalKey<ScaffoldState>
-  scaffoldKey =
-  GlobalKey<ScaffoldState>();
+  final TextEditingController messageController = TextEditingController();
 
-  final TextEditingController
-  messageController =
-  TextEditingController();
-
-  final ScrollController
-  scrollController =
-  ScrollController();
+  final ScrollController scrollController = ScrollController();
 
   List<ChatItem> recentChats = [];
 
-  List<Map<String, dynamic>>
-  messages = [
+  List<Map<String, dynamic>> messages = [
     {
       "isUser": false,
-      "message":
-      "Welcome to KHEMET AI.\nAsk me anything about ancient Egypt, artifacts, museums, kings, or history.",
+      "message": AppLocalization.translate("welcome_to_khemet_ai_chat_intro"),
     },
   ];
 
@@ -59,34 +43,16 @@ class _ChatBotPageState
   void initState() {
     super.initState();
 
-    Future.delayed(
-      const Duration(milliseconds: 500),
-          () {
-
-        if (widget.artifactName != null &&
-            widget.artifactName!
-                .isNotEmpty) {
-
-          askAboutArtifact(
-              widget.artifactName!);
-        }
-      },
-    );
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (widget.artifactName != null && widget.artifactName!.isNotEmpty) {
+        askAboutArtifact(widget.artifactName!);
+      }
+    });
   }
 
-  void askAboutArtifact(
-      String artifactName) async {
-
+  void askAboutArtifact(String artifactName) async {
     if (isFirstMessage) {
-
-      recentChats.insert(
-        0,
-
-        ChatItem(
-          title: artifactName,
-          messages: [],
-        ),
-      );
+      recentChats.insert(0, ChatItem(title: artifactName, messages: []));
 
       currentChatIndex = 0;
 
@@ -94,62 +60,37 @@ class _ChatBotPageState
     }
 
     setState(() {
+      messages.add({"isUser": true, "message": artifactName});
 
-      messages.add({
-        "isUser": true,
-        "message": artifactName,
-      });
-
-      recentChats[currentChatIndex!]
-          .messages =
-          List.from(messages);
+      recentChats[currentChatIndex!].messages = List.from(messages);
     });
 
     scrollToBottom();
 
-    await Future.delayed(
-      const Duration(milliseconds: 700),
-    );
+    await Future.delayed(const Duration(milliseconds: 700));
 
     setState(() {
-
       messages.add({
-
         "isUser": false,
-
-        "message":
-        "Searching information about $artifactName...\n\nThis artifact belongs to Ancient Egypt and is one of the important historical treasures.",
+        "messageKey": "searching_artifact_info",
+        "artifactName": artifactName,
       });
 
-      recentChats[currentChatIndex!]
-          .messages =
-          List.from(messages);
+      recentChats[currentChatIndex!].messages = List.from(messages);
     });
 
     scrollToBottom();
   }
 
   void sendMessage() async {
-
-    if (messageController.text
-        .trim()
-        .isEmpty) {
+    if (messageController.text.trim().isEmpty) {
       return;
     }
 
-    String userMessage =
-    messageController.text.trim();
+    String userMessage = messageController.text.trim();
 
     if (isFirstMessage) {
-
-      recentChats.insert(
-        0,
-
-        ChatItem(
-          title: userMessage,
-          messages: [],
-        ),
-      );
+      recentChats.insert(0, ChatItem(title: userMessage, messages: []));
 
       currentChatIndex = 0;
 
@@ -157,116 +98,76 @@ class _ChatBotPageState
     }
 
     setState(() {
+      messages.add({"isUser": true, "message": userMessage});
 
-      messages.add({
-        "isUser": true,
-        "message": userMessage,
-      });
-
-      recentChats[currentChatIndex!]
-          .messages =
-          List.from(messages);
+      recentChats[currentChatIndex!].messages = List.from(messages);
     });
 
     messageController.clear();
 
     scrollToBottom();
 
-    await Future.delayed(
-      const Duration(milliseconds: 700),
-    );
+    await Future.delayed(const Duration(milliseconds: 700));
 
     setState(() {
-
       messages.add({
-
         "isUser": false,
 
         "message":
-        "Tutankhamun was an ancient Egyptian pharaoh of the 18th dynasty. He became king at age 9 and is famous for his nearly intact golden tomb discovered in 1922.",
+            "Tutankhamun was an ancient Egyptian pharaoh of the 18th dynasty. He became king at age 9 and is famous for his nearly intact golden tomb discovered in 1922.",
       });
 
-      recentChats[currentChatIndex!]
-          .messages =
-          List.from(messages);
+      recentChats[currentChatIndex!].messages = List.from(messages);
     });
 
     scrollToBottom();
   }
 
   void scrollToBottom() {
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (!scrollController.hasClients) {
+        return;
+      }
 
-    Future.delayed(
-      const Duration(milliseconds: 300),
-          () {
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent,
 
-        if (!scrollController
-            .hasClients) {
-          return;
-        }
+        duration: const Duration(milliseconds: 400),
 
-        scrollController.animateTo(
-
-          scrollController
-              .position
-              .maxScrollExtent,
-
-          duration:
-          const Duration(
-              milliseconds: 400),
-
-          curve: Curves.easeOut,
-        );
-      },
-    );
+        curve: Curves.easeOut,
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
 
-    final screenWidth =
-        MediaQuery.of(context)
-            .size
-            .width;
-
-    final screenHeight =
-        MediaQuery.of(context)
-            .size
-            .height;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-
       key: scaffoldKey,
 
-      backgroundColor:
-      const Color(0xFFF2E8D5),
+      backgroundColor: const Color(0xFFF2E8D5),
       drawer: Drawer(
         child: SafeArea(
           child: Column(
-            crossAxisAlignment:
-            CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
 
             children: [
-
               const SizedBox(height: 15),
 
               Padding(
-                padding:
-                const EdgeInsets.symmetric(
-                  horizontal: 16,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
 
                 child: Row(
                   children: [
-
                     Container(
                       width: 42,
                       height: 42,
 
-                      decoration:
-                      const BoxDecoration(
-                        color:
-                        Color(0xFFC9A24D),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFC9A24D),
 
                         shape: BoxShape.circle,
                       ),
@@ -280,12 +181,11 @@ class _ChatBotPageState
 
                     const SizedBox(width: 10),
 
-                    const Text(
-                      "Khemet",
+                    Text(
+                      AppLocalization.translate("khemet"),
 
                       style: TextStyle(
-                        fontWeight:
-                        FontWeight.bold,
+                        fontWeight: FontWeight.bold,
 
                         fontSize: 16,
                       ),
@@ -297,25 +197,18 @@ class _ChatBotPageState
               const SizedBox(height: 20),
 
               ListTile(
+                leading: const Icon(Icons.add_comment_outlined),
 
-                leading: const Icon(
-                  Icons.add_comment_outlined,
-                ),
-
-                title:
-                const Text("New Chat"),
-
+                title: Text(AppLocalization.translate("new_chat")),
                 onTap: () {
-
                   Navigator.pop(context);
 
                   setState(() {
-
                     messages = [
                       {
                         "isUser": false,
                         "message":
-                        "Welcome to KHEMET AI.\nAsk me anything about ancient Egypt, artifacts, museums, kings, or history.",
+                            "Welcome to KHEMET AI.\nAsk me anything about ancient Egypt, artifacts, museums, kings, or history.",
                       },
                     ];
 
@@ -328,302 +221,235 @@ class _ChatBotPageState
 
               const Divider(),
 
-              const Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
 
                 child: Text(
-                  "Recent Chat",
+                  AppLocalization.translate("recent_chat"),
 
-                  style: TextStyle(
-                    color:
-                    Color(0xFFC9A24D),
-
-                    fontSize: 18,
-                  ),
+                  style: TextStyle(color: Color(0xFFC9A24D), fontSize: 18),
                 ),
               ),
 
               Expanded(
                 child: recentChats.isEmpty
+                    ? Center(
+                        child: Text(
+                          AppLocalization.translate("no_chats_yet"),
 
-                    ? const Center(
-                  child: Text(
-                    "No chats yet",
-
-                    style: TextStyle(
-                      color: Colors.black54,
-                    ),
-                  ),
-                )
-
+                          style: TextStyle(color: Colors.black54),
+                        ),
+                      )
                     : ListView.builder(
+                        itemCount: recentChats.length,
 
-                  itemCount:
-                  recentChats.length,
+                        itemBuilder: (context, index) {
+                          final chat = recentChats[index];
 
-                  itemBuilder:
-                      (context, index) {
-
-                    final chat =
-                    recentChats[index];
-
-                    return Padding(
-
-                      padding:
-                      const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-
-                      child: Container(
-
-                        decoration:
-                        BoxDecoration(
-
-                          color: Colors.white,
-
-                          borderRadius:
-                          BorderRadius.circular(
-                              14),
-
-                          boxShadow: [
-
-                            BoxShadow(
-                              color: Colors.black
-                                  .withOpacity(
-                                  0.04),
-
-                              blurRadius: 4,
-
-                              offset:
-                              const Offset(
-                                  0, 2),
-                            ),
-                          ],
-                        ),
-
-                        child: ListTile(
-
-                          onTap: () {
-
-                            setState(() {
-
-                              messages =
-                                  List.from(
-                                      chat.messages);
-
-                              currentChatIndex =
-                                  index;
-
-                              isFirstMessage =
-                              false;
-                            });
-
-                            Navigator.pop(
-                                context);
-
-                            scrollToBottom();
-                          },
-
-                          leading: Container(
-                            width: 34,
-                            height: 34,
-
-                            decoration:
-                            const BoxDecoration(
-                              color:
-                              Color(0xFFF3E2B8),
-
-                              shape:
-                              BoxShape.circle,
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
                             ),
 
-                            child: const Icon(
-                              Icons
-                                  .chat_bubble_outline,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
 
-                              size: 18,
+                                borderRadius: BorderRadius.circular(14),
 
-                              color:
-                              Color(0xFFC9A24D),
-                            ),
-                          ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.04),
 
-                          title: Text(
-                            chat.title,
+                                    blurRadius: 4,
 
-                            maxLines: 1,
-
-                            overflow:
-                            TextOverflow
-                                .ellipsis,
-
-                            style:
-                            const TextStyle(
-                              fontSize: 13,
-
-                              fontWeight:
-                              FontWeight.w600,
-                            ),
-                          ),
-
-                          trailing: Row(
-                            mainAxisSize:
-                            MainAxisSize.min,
-
-                            children: [
-
-                              GestureDetector(
-
-                                onTap: () {
-
-                                  TextEditingController
-                                  editController =
-                                  TextEditingController(
-                                    text: chat.title,
-                                  );
-
-                                  showDialog(
-
-                                    context: context,
-
-                                    builder: (_) {
-
-                                      return AlertDialog(
-
-                                        shape:
-                                        RoundedRectangleBorder(
-                                          borderRadius:
-                                          BorderRadius.circular(
-                                              20),
-                                        ),
-
-                                        title: const Text(
-                                            "Rename Chat"),
-
-                                        content: TextField(
-                                          controller:
-                                          editController,
-
-                                          decoration:
-                                          const InputDecoration(
-                                            hintText:
-                                            "Enter new name",
-                                          ),
-                                        ),
-
-                                        actions: [
-
-                                          TextButton(
-
-                                            onPressed: () {
-                                              Navigator.pop(
-                                                  context);
-                                            },
-
-                                            child:
-                                            const Text(
-                                                "Cancel"),
-                                          ),
-
-                                          ElevatedButton(
-
-                                            style:
-                                            ElevatedButton.styleFrom(
-                                              backgroundColor:
-                                              const Color(
-                                                  0xFFC9A24D),
-                                            ),
-
-                                            onPressed: () {
-
-                                              setState(() {
-
-                                                chat.title =
-                                                    editController
-                                                        .text;
-                                              });
-
-                                              Navigator.pop(
-                                                  context);
-                                            },
-
-                                            child:
-                                            const Text(
-                                                "Save"),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                },
-
-                                child: const Padding(
-                                  padding:
-                                  EdgeInsets.all(6),
-
-                                  child: Icon(
-                                    Icons.edit_outlined,
-
-                                    size: 20,
-
-                                    color:
-                                    Colors.black54,
+                                    offset: const Offset(0, 2),
                                   ),
-                                ),
+                                ],
                               ),
 
-                              GestureDetector(
-
+                              child: ListTile(
                                 onTap: () {
-
                                   setState(() {
+                                    messages = List.from(chat.messages);
 
-                                    recentChats
-                                        .removeAt(index);
+                                    currentChatIndex = index;
 
-                                    if (recentChats
-                                        .isEmpty) {
-
-                                      messages = [
-                                        {
-                                          "isUser":
-                                          false,
-
-                                          "message":
-                                          "Welcome to KHEMET AI.\nAsk me anything about ancient Egypt.",
-                                        },
-                                      ];
-
-                                      isFirstMessage =
-                                      true;
-                                    }
+                                    isFirstMessage = false;
                                   });
+
+                                  Navigator.pop(context);
+
+                                  scrollToBottom();
                                 },
 
-                                child: const Padding(
-                                  padding:
-                                  EdgeInsets.all(6),
+                                leading: Container(
+                                  width: 34,
+                                  height: 34,
 
-                                  child: Icon(
-                                    Icons.delete_outline,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFF3E2B8),
 
-                                    size: 22,
+                                    shape: BoxShape.circle,
+                                  ),
 
-                                    color: Colors.red,
+                                  child: const Icon(
+                                    Icons.chat_bubble_outline,
+
+                                    size: 18,
+
+                                    color: Color(0xFFC9A24D),
                                   ),
                                 ),
+
+                                title: Text(
+                                  chat.title,
+
+                                  maxLines: 1,
+
+                                  overflow: TextOverflow.ellipsis,
+
+                                  style: const TextStyle(
+                                    fontSize: 13,
+
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        TextEditingController editController =
+                                            TextEditingController(
+                                              text: chat.title,
+                                            );
+
+                                        showDialog(
+                                          context: context,
+
+                                          builder: (_) {
+                                            return AlertDialog(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                              ),
+
+                                              title: Text(
+                                                AppLocalization.translate(
+                                                  "rename_chat",
+                                                ),
+                                              ),
+
+                                              content: TextField(
+                                                controller: editController,
+
+                                                decoration: InputDecoration(
+                                                  hintText:
+                                                      AppLocalization.translate(
+                                                        "enter_new_name",
+                                                      ),
+                                                ),
+                                              ),
+
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+
+                                                  child: Text(
+                                                    AppLocalization.translate(
+                                                      "cancel",
+                                                    ),
+                                                  ),
+                                                ),
+
+                                                ElevatedButton(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                        backgroundColor:
+                                                            const Color(
+                                                              0xFFC9A24D,
+                                                            ),
+                                                      ),
+
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      chat.title =
+                                                          editController.text;
+                                                    });
+
+                                                    Navigator.pop(context);
+                                                  },
+
+                                                  child: Text(
+                                                    AppLocalization.translate(
+                                                      "save",
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      },
+
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(6),
+
+                                        child: Icon(
+                                          Icons.edit_outlined,
+
+                                          size: 20,
+
+                                          color: Colors.black54,
+                                        ),
+                                      ),
+                                    ),
+
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          recentChats.removeAt(index);
+
+                                          if (recentChats.isEmpty) {
+                                            messages = [
+                                              {
+                                                "isUser": false,
+
+                                                "message":
+                                                    "Welcome to KHEMET AI.\nAsk me anything about ancient Egypt.",
+                                              },
+                                            ];
+
+                                            isFirstMessage = true;
+                                          }
+                                        });
+                                      },
+
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(6),
+
+                                        child: Icon(
+                                          Icons.delete_outline,
+
+                                          size: 22,
+
+                                          color: Colors.red,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ],
-                          ),
-                        ),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
             ],
           ),
@@ -632,22 +458,18 @@ class _ChatBotPageState
       body: SafeArea(
         child: Stack(
           children: [
-
             Positioned.fill(
               child: IgnorePointer(
                 child: Center(
                   child: Opacity(
-
                     opacity: 0.18,
 
                     child: Image.asset(
                       "assets/image/A.png",
 
-                      width:
-                      screenWidth * 0.70,
+                      width: screenWidth * 0.70,
 
-                      height:
-                      screenWidth * 0.70,
+                      height: screenWidth * 0.70,
 
                       fit: BoxFit.contain,
                     ),
@@ -658,60 +480,50 @@ class _ChatBotPageState
 
             Column(
               children: [
-
                 Padding(
-                  padding:
-                  const EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 10,
                   ),
 
                   child: Row(
                     children: [
-
                       GestureDetector(
                         onTap: () {
                           Navigator.pop(context);
                         },
 
-                        child: const Icon(
-                          Icons.arrow_back,
-                          size: 28,
-                        ),
+                        child: const Icon(Icons.arrow_back, size: 28),
                       ),
 
-                      SizedBox(
-                          width:
-                          screenWidth * 0.04),
+                      SizedBox(width: screenWidth * 0.04),
 
                       Expanded(
                         child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
 
-                          children: const [
-
+                          children: [
                             Text(
-                              "KHEMET AI",
+                              AppLocalization.translate("khemet_ai"),
 
                               style: TextStyle(
                                 fontSize: 26,
 
-                                fontWeight:
-                                FontWeight.w800,
+                                fontWeight: FontWeight.w800,
                               ),
                             ),
 
                             SizedBox(height: 2),
 
                             Text(
-                              "Ask anything about Ancient Egypt",
+                              AppLocalization.translate(
+                                "ask_anything_about_ancient_egypt",
+                              ),
 
                               style: TextStyle(
                                 fontSize: 12,
 
-                                color:
-                                Colors.black54,
+                                color: Colors.black54,
                               ),
                             ),
                           ],
@@ -720,26 +532,20 @@ class _ChatBotPageState
 
                       GestureDetector(
                         onTap: () {
-                          scaffoldKey.currentState
-                              ?.openDrawer();
+                          scaffoldKey.currentState?.openDrawer();
                         },
 
                         child: Container(
                           width: 42,
                           height: 42,
 
-                          decoration:
-                          const BoxDecoration(
-                            color:
-                            Color(0xFFC9A24D),
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFC9A24D),
 
                             shape: BoxShape.circle,
                           ),
 
-                          child: const Icon(
-                            Icons.tune,
-                            color: Colors.black87,
-                          ),
+                          child: const Icon(Icons.tune, color: Colors.black87),
                         ),
                       ),
                     ],
@@ -748,76 +554,51 @@ class _ChatBotPageState
 
                 Expanded(
                   child: ListView.builder(
+                    controller: scrollController,
 
-                    controller:
-                    scrollController,
-
-                    padding:
-                    const EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 12,
                     ),
 
-                    itemCount:
-                    messages.length,
+                    itemCount: messages.length,
 
-                    itemBuilder:
-                        (context, index) {
+                    itemBuilder: (context, index) {
+                      final message = messages[index];
 
-                      final message =
-                      messages[index];
-
-                      final bool isUser =
-                      message["isUser"];
+                      final bool isUser = message["isUser"];
 
                       return Align(
-
                         alignment: isUser
                             ? Alignment.centerRight
                             : Alignment.centerLeft,
 
                         child: Container(
+                          margin: const EdgeInsets.only(bottom: 14),
 
-                          margin:
-                          const EdgeInsets.only(
-                              bottom: 14),
-
-                          padding:
-                          const EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 14,
                           ),
 
-                          constraints:
-                          BoxConstraints(
-                            maxWidth:
-                            screenWidth * 0.78,
+                          constraints: BoxConstraints(
+                            maxWidth: screenWidth * 0.78,
                           ),
 
-                          decoration:
-                          BoxDecoration(
-
+                          decoration: BoxDecoration(
                             color: isUser
-                                ? const Color(
-                                0xFFC9A24D)
+                                ? const Color(0xFFC9A24D)
                                 : Colors.white,
 
-                            borderRadius:
-                            BorderRadius.circular(
-                                22),
+                            borderRadius: BorderRadius.circular(22),
 
                             boxShadow: [
-
                               BoxShadow(
-                                color: Colors.black
-                                    .withOpacity(
-                                    0.05),
+                                color: Colors.black.withOpacity(0.05),
 
                                 blurRadius: 6,
 
-                                offset:
-                                const Offset(
-                                    0, 4),
+                                offset: const Offset(0, 4),
                               ),
                             ],
                           ),
@@ -826,16 +607,11 @@ class _ChatBotPageState
                             message["message"],
 
                             style: TextStyle(
-                              fontSize:
-                              screenWidth < 400
-                                  ? 14
-                                  : 16,
+                              fontSize: screenWidth < 400 ? 14 : 16,
 
                               height: 1.5,
 
-                              color: isUser
-                                  ? Colors.black
-                                  : Colors.black87,
+                              color: isUser ? Colors.black : Colors.black87,
                             ),
                           ),
                         ),
@@ -853,40 +629,25 @@ class _ChatBotPageState
 
                   child: Row(
                     children: [
-
                       Expanded(
                         child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 18),
 
-                          padding:
-                          const EdgeInsets.symmetric(
-                            horizontal: 18,
-                          ),
-
-                          decoration:
-                          BoxDecoration(
-
+                          decoration: BoxDecoration(
                             color: Colors.white,
 
-                            borderRadius:
-                            BorderRadius.circular(
-                                30),
+                            borderRadius: BorderRadius.circular(30),
                           ),
 
                           child: TextField(
-                            controller:
-                            messageController,
+                            controller: messageController,
 
-                            decoration:
-                            const InputDecoration(
-                              border:
-                              InputBorder.none,
+                            decoration:  InputDecoration(
+                              border: InputBorder.none,
 
-                              hintText:
-                              "Ask your museum guide...",
-                            ),
+                              hintText: AppLocalization.translate("ask_your_museum_guide"),                            ),
 
-                            onSubmitted:
-                                (value) {
+                            onSubmitted: (value) {
                               sendMessage();
                             },
                           ),
@@ -896,27 +657,20 @@ class _ChatBotPageState
                       const SizedBox(width: 12),
 
                       GestureDetector(
-
                         onTap: sendMessage,
 
                         child: Container(
+                          width: screenWidth * 0.14,
 
-                          width:
-                          screenWidth * 0.14,
+                          height: screenWidth * 0.14,
 
-                          height:
-                          screenWidth * 0.14,
-
-                          constraints:
-                          const BoxConstraints(
+                          constraints: const BoxConstraints(
                             minWidth: 54,
                             minHeight: 54,
                           ),
 
-                          decoration:
-                          const BoxDecoration(
-                            color:
-                            Color(0xFFC9A24D),
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFC9A24D),
 
                             shape: BoxShape.circle,
                           ),

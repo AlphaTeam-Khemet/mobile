@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../localization/app_localization.dart';
 import 'artifact_details_page.dart';
 import '../chat/chat_bot_page.dart';
 
@@ -120,8 +121,7 @@ class _CollectionPageState extends State<CollectionPage> {
 
                     Expanded(
                       child: Text(
-                        "Collection",
-                        style: TextStyle(
+                        AppLocalization.translate("collection"),                        style: TextStyle(
                           fontSize: width * 0.09,
                           fontWeight: FontWeight.w800,
                           color: const Color(
@@ -137,9 +137,8 @@ class _CollectionPageState extends State<CollectionPage> {
                   height: height * 0.005,
                 ),
 
-                const Text(
-                  "Discover thousands of years of Egyptian history and the legacy of the Pharaohs.",
-                  style: TextStyle(
+                  Text(
+                    AppLocalization.translate("collection_description"),                  style: TextStyle(
                     color: Color(0xFF8E6F45),
                     fontSize: 14,
                   ),
@@ -164,10 +163,8 @@ class _CollectionPageState extends State<CollectionPage> {
                       });
                     },
                     decoration:
-                    const InputDecoration(
-                      hintText:
-                      "Search in collection",
-                      prefixIcon: Icon(
+                     InputDecoration(
+                      hintText: AppLocalization.translate("search_collection"),                      prefixIcon: Icon(
                         Icons.search,
                         size: 20,
                       ),

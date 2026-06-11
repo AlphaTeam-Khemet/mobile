@@ -7,6 +7,7 @@ import '../widgets/app_text_styles.dart';
 import '../widgets/page_indicator.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_background.dart';
+import '../localization/app_localization.dart';
 
 class Onboarding1 extends StatefulWidget {
   const Onboarding1({Key? key}) : super(key: key);
@@ -55,9 +56,9 @@ class _Onboarding1State extends State<Onboarding1> {
                 context,
                 MaterialPageRoute(builder: (_) => const WelcomePage()),
               ),
-              child: const Text(
-                "Skip",
-                style: TextStyle(
+              child: Text(
+                AppLocalization.translate("skip"),
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -84,25 +85,25 @@ class _Onboarding1State extends State<Onboarding1> {
                     Expanded(
                       child: SingleChildScrollView(
                         child: Column(
-                          children: const [
+                          children: [
                             Text(
-                              "🏛 SMART GUIDE",
-                              style: TextStyle(
+                              AppLocalization.translate("smart_guide"),
+                              style: const TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.primary,
                               ),
                               textAlign: TextAlign.center,
                             ),
-                            SizedBox(height: 14),
+                            const SizedBox(height: 14),
                             Text(
-                              "Explore the museum freely",
+                              AppLocalization.translate("explore_the_museum_freely"),
                               style: AppTextStyles.title,
                               textAlign: TextAlign.center,
                             ),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             Text(
-                              "Navigate the halls of history at your own pace with our intelligent digital companion.",
+                              AppLocalization.translate("smart_guide_description"),
                               style: AppTextStyles.body,
                               textAlign: TextAlign.center,
                             ),

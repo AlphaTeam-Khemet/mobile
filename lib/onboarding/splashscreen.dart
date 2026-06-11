@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../localization/app_localization.dart';
 import '../onboarding/onboarding1.dart';
 import 'language.dart';
 
@@ -75,9 +76,8 @@ class SplashScreen extends StatelessWidget {
 
                   const SizedBox(height: 18),
 
-                  const Text(
-
-                    "Your smart journey\nthrough ancient\nEgypt begins here",
+                  Text(
+                    AppLocalization.translate("your_journey_title"),
 
                     textAlign: TextAlign.center,
 
@@ -139,7 +139,7 @@ class SplashScreen extends StatelessWidget {
                         );
                       },
 
-                      child: const Row(
+                      child:  Row(
 
                         mainAxisAlignment:
                         MainAxisAlignment.center,
@@ -147,8 +147,7 @@ class SplashScreen extends StatelessWidget {
                         children: [
 
                           Text(
-
-                            "Enter Experience",
+                            AppLocalization.translate("enter_experience"),
 
                             style: TextStyle(
 

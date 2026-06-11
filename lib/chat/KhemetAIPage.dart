@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../localization/app_localization.dart';
+
 class KhemetAIPage extends StatefulWidget {
 
   final String artifactTitle;
@@ -130,7 +132,7 @@ class _KhemetAIPageState
 
                   const SizedBox(width: 18),
 
-                  const Column(
+                   Column(
 
                     crossAxisAlignment:
                     CrossAxisAlignment.start,
@@ -139,8 +141,8 @@ class _KhemetAIPageState
 
                       Text(
 
-                        "KHEMET AI",
 
+                          AppLocalization.translate("khemet_ai"),
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight:
@@ -152,8 +154,7 @@ class _KhemetAIPageState
 
                       Text(
 
-                        "Your Smart Museum Guide",
-
+                          AppLocalization.translate("your_smart_museum_guide"),
                         style: TextStyle(
                           color: Colors.grey,
                           fontSize: 13,
@@ -281,8 +282,7 @@ class _KhemetAIPageState
                       InputDecoration(
 
                         hintText:
-                        "Ask anything...",
-
+                        AppLocalization.translate("ask_anything"),
                         filled: true,
 
                         fillColor:

@@ -1,15 +1,19 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import '../auth/signin.dart';
+import '../localization/app_localization.dart';
+import '../onboarding/welcome.dart';
+import '../shared_widgets/language_manager.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfilePage extends StatefulWidget {
-
+  final bool isGuest;
   final int favoriteCount;
 
   const ProfilePage({
     Key? key,
-    required this.favoriteCount,
+    required this.favoriteCount, required this.isGuest,
   }) : super(key: key);
 
   @override
@@ -36,8 +40,6 @@ class _ProfilePageState extends State<ProfilePage> {
     {"code": "de", "label": "🇩🇪 Deutsch"},
     {"code": "ru", "label": "🇷🇺 Русский"},
   ];
-
-  String selectedLanguage = "🇬🇧 English";
 
 
 
@@ -98,10 +100,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
                 children: [
 
-                  const Center(
+                   Center(
 
                     child: Text(
-                      "Profile",
+                      AppLocalization.translate("profile"),
 
                       style: TextStyle(
                         fontSize: 22,
@@ -126,8 +128,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
                       child: Text(
 
-                        isEditing ? "Done" : "Edit",
-
+                          isEditing
+                              ? AppLocalization.translate("done")
+                              : AppLocalization.translate("edit"),
                         style: const TextStyle(
                           color: Color(0xFFC9A24D),
                           fontWeight: FontWeight.w600,
@@ -250,9 +253,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
                     const SizedBox(height: 4),
 
-                    const Text(
-                      "KHEMET MEMBER",
-
+                     Text(
+                      AppLocalization.translate("khemet_member"),
                       style: TextStyle(
                         fontSize: 13,
                         letterSpacing: 1.2,
@@ -293,16 +295,14 @@ class _ProfilePageState extends State<ProfilePage> {
 
                     _buildInfoTile(
                       icon: Icons.person_outline,
-                      title: "FULL NAME",
-                      controller: fullNameController,
+                      title: AppLocalization.translate("full_name"),                      controller: fullNameController,
                     ),
 
                     const Divider(height: 24),
 
                     _buildInfoTile(
                       icon: Icons.email_outlined,
-                      title: "EMAIL",
-                      controller: emailController,
+                      title: AppLocalization.translate("email"),                      controller: emailController,
                     ),
 
                     const Divider(height: 24),
@@ -341,9 +341,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
                             children: [
 
-                              const Text(
-                                "LANGUAGE",
-
+                               Text(
+                          AppLocalization.translate("language"),
                                 style: TextStyle(
                                   fontSize: 11,
                                   color: Colors.grey,
@@ -354,57 +353,55 @@ class _ProfilePageState extends State<ProfilePage> {
 
                               const SizedBox(height: 4),
 
-                              isEditing
+                              ValueListenableBuilder<String>(
+                                valueListenable: LanguageManager.currentLanguage,
+                                builder: (context, languageCode, child) {
 
-                                  ? DropdownButtonHideUnderline(
+                                  final safeLanguage = languages.any((l) => l['code'] == languageCode)
+                                      ? languageCode
+                                      : 'en';
 
-                                child:
-                                DropdownButton<String>(
+                                  return isEditing
+                                      ? DropdownButtonHideUnderline(
+                                    child: DropdownButton<String>(
+                                      value: safeLanguage,
+                                      isExpanded: true,
 
-                                  value:
-                                  selectedLanguage,
+                                      items: languages.map((lang) {
+                                        return DropdownMenuItem<String>(
+                                          value: lang['code'],
+                                          child: Text(lang['label']!),
+                                        );
+                                      }).toList(),
 
-                                  isExpanded: true,
+                                      onChanged: (value) async {
+                                        if (value == null) return;
 
-                                  items: languages
-                                      .map((lang) {
+                                        await LanguageManager.changeLanguage(value);
 
-                                    return DropdownMenuItem(
-                                      value:
-                                      lang['label'],
-
-                                      child: Text(
-                                        lang['label']!,
-                                      ),
-                                    );
-                                  }).toList(),
-
-                                  onChanged: (value) {
-
-                                    setState(() {
-                                      selectedLanguage =
-                                      value!;
-                                    });
-                                  },
-                                ),
-                              )
-
-                                  : Text(
-                                selectedLanguage,
-
-                                style: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight:
-                                  FontWeight.w600,
-                                  color:
-                                  Colors.black87,
-                                ),
+                                        setState(() {});
+                                      },
+                                    ),
+                                  )
+                                      : Text(
+                                    languages.firstWhere(
+                                          (l) => l['code'] == languageCode,
+                                      orElse: () => {"label": "🇬🇧 English"},
+                                    )['label']!,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black87,
+                                    ),
+                                  );
+                                },
                               ),
-                            ],
-                          ),
-                        ),
 
-                        if (isEditing)
+
+
+
+
+                              if (isEditing)
 
                           const Icon(
                             Icons.keyboard_arrow_down,
@@ -412,14 +409,13 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                       ],
                     ),
-                  ],
+                        )],
                 ),
-              ),
-
-              const SizedBox(height: 22),
+              ]),
 
 
 
+          ),
               if (isEditing)
 
                 SizedBox(
@@ -449,16 +445,16 @@ class _ProfilePageState extends State<ProfilePage> {
                       ScaffoldMessenger.of(context)
                           .showSnackBar(
 
-                        const SnackBar(
+                         SnackBar(
                           content:
-                          Text("Profile Updated"),
-                        ),
+                          Text(
+                            AppLocalization.translate("profile_updated"),
+                          )                        ),
                       );
                     },
 
-                    child: const Text(
-                      "Save Changes",
-
+                    child:  Text(
+                      AppLocalization.translate("save_changes"),
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.black,
@@ -488,9 +484,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
                   children: [
 
-                    const Text(
-                      "MY ACTIVITY",
-
+                     Text(
+                AppLocalization.translate("my_activity"),
                       style: TextStyle(
                         color: Color(0xFF9B7B42),
                         fontSize: 13,
@@ -500,9 +495,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
                     const SizedBox(height: 14),
 
-                    const Text(
-                      "Your Museum Journey",
-
+                     Text(
+                      AppLocalization.translate("your_museum_journey"),
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w800,
@@ -515,24 +509,21 @@ class _ProfilePageState extends State<ProfilePage> {
 
                     _buildActivityCard(
                       imagePath: "assets/icons/fav.png",
-                      title: "Favorite Artifacts",
-                      count: widget.favoriteCount.toString(),
+                      title: AppLocalization.translate("favorite_artifacts"),                      count: widget.favoriteCount.toString(),
                     ),
 
                     const SizedBox(height: 18),
 
                     _buildActivityCard(
                       imagePath: "assets/icons/chat.png",
-                      title: "AI Chat",
-                      count: "0",
+                      title: AppLocalization.translate("ai_chat"),                      count: "0",
                     ),
 
                     const SizedBox(height: 18),
 
                     _buildActivityCard(
                       imagePath: "assets/icons/scan.png",
-                      title: "Uploaded Scans",
-                      count: "0",
+                      title: AppLocalization.translate("uploaded_scans"),                      count: "0",
                     ),
                   ],
                 ),
@@ -550,27 +541,61 @@ class _ProfilePageState extends State<ProfilePage> {
 
                   style: ElevatedButton.styleFrom(
 
-                    backgroundColor:
-                    const Color(0xFF2E2925),
+                    backgroundColor: widget.isGuest
+                        ? const Color(0xFFC9A24D)
+                        : const Color(0xFF2E2925),
 
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                      BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(14),
                     ),
                   ),
 
-                  onPressed: () {},
+                  onPressed: () {
 
-                  icon: const Icon(
-                    Icons.logout,
-                    color: Color(0xFFC9A24D),
+                    if (widget.isGuest) {
+
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const SignInPage(),
+                        ),
+                      );
+
+                    } else {
+
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const WelcomePage(),
+                        ),
+                            (route) => false,
+                      );
+                    }
+                  },
+
+                  icon: Icon(
+
+                    widget.isGuest
+                        ? Icons.login
+                        : Icons.logout,
+
+                    color: widget.isGuest
+                        ? Colors.black
+                        : const Color(0xFFC9A24D),
                   ),
 
-                  label: const Text(
-                    "Log Out",
+                  label: Text(
+
+                    widget.isGuest
+                        ? AppLocalization.translate("sign_in")
+                        : AppLocalization.translate("log_out"),
 
                     style: TextStyle(
-                      color: Colors.white,
+
+                      color: widget.isGuest
+                          ? Colors.black
+                          : Colors.white,
+
                       fontWeight: FontWeight.w700,
                     ),
                   ),

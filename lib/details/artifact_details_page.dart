@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../chat/chat_bot_page.dart';
+import '../localization/app_localization.dart';
 
 class ArtifactDetailsPage extends StatefulWidget {
   final String title;
@@ -90,9 +91,9 @@ class _ArtifactDetailsPageState extends State<ArtifactDetailsPage>
 
                         onPressed: () {
                           Share.share(
-                            'Check out this artifact in KHEMET Smart Guide: ${widget.title}',
-
-                            subject: 'Artifact Details',
+                            AppLocalization.translate("share_artifact_text")
+                                .replaceAll("{title}", widget.title),
+                            subject: AppLocalization.translate("artifact_details"),
                           );
                         },
                       ),
@@ -118,10 +119,9 @@ class _ArtifactDetailsPageState extends State<ArtifactDetailsPage>
                               );
 
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text("Removed from Favorites 💔"),
-                                ),
-                              );
+                                  SnackBar(
+                                    content: Text(AppLocalization.translate("removed_from_favorites")),
+                              ));
                             } else {
                               widget.favorites.add({
                                 'title': widget.title,
@@ -131,8 +131,8 @@ class _ArtifactDetailsPageState extends State<ArtifactDetailsPage>
                               });
 
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text("Added to Favorites ❤️"),
+                                SnackBar(
+                                  content: Text(AppLocalization.translate("added_to_favorites")),
                                 ),
                               );
                             }
@@ -299,7 +299,7 @@ class _ArtifactDetailsPageState extends State<ArtifactDetailsPage>
                               letterSpacing: 0.3,
                             ),
 
-                            tabs: const [Tab(text: "Overview")],
+                            tabs:  [Tab(text: AppLocalization.translate("overview")),],
                           ),
                         ),
 
@@ -390,10 +390,9 @@ class _ArtifactDetailsPageState extends State<ArtifactDetailsPage>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
 
-      children: const [
+      children:  [
         Text(
-          "The Golden Face of Eternity",
-
+          AppLocalization.translate("golden_face_eternity"),
           style: TextStyle(
             fontWeight: FontWeight.w800,
 
@@ -406,8 +405,7 @@ class _ArtifactDetailsPageState extends State<ArtifactDetailsPage>
         SizedBox(height: 8),
 
         Text(
-          "The mask of Tutankhamun is a gold death mask of the 18th-dynasty ancient Egyptian Pharaoh Tutankhamun. It was discovered by Howard Carter in 1925 in tomb KV62 and is housed in the Grand Egyptian Museum.",
-
+          AppLocalization.translate("artifact_overview_description"),
           style: TextStyle(fontSize: 14, color: Colors.black87, height: 1.5),
         ),
       ],
