@@ -5,6 +5,7 @@ import '../main_tab_home/main_tab_home.dart';
 import '../shared_widgets/custom_text_field.dart';
 import 'register.dart';
 import '../shared_widgets/custom_action_button.dart';
+import '../core/network/auth_service.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key}) : super(key: key);
@@ -18,6 +19,8 @@ class _SignInPageState extends State<SignInPage> {
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
+  bool _isLoading = false;
 
   void _goToRegister(BuildContext context) {
     Navigator.push(
@@ -26,7 +29,9 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  void _goToHome(BuildContext context) {
+  Future<void> _handleSignIn(BuildContext context) async {
+    if (_isLoading) return;
+
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
@@ -40,12 +45,21 @@ class _SignInPageState extends State<SignInPage> {
       return;
     }
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const MainNavigationPage(isGuest: false),
-      ),
-    );
+    setState(() => _isLoading = true);
+    final result = await _authService.login(email: email, password: password);
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+
+    if (result.success) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const MainNavigationPage(isGuest: false)),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result.errorMessage ?? "Sign in failed"), backgroundColor: Colors.red),
+      );
+    }
   }
 
   void _goToForgotPassword(BuildContext context) {
@@ -166,9 +180,11 @@ class _SignInPageState extends State<SignInPage> {
 
                           SizedBox(height: screenHeight * 0.03),
 
-                          CustomActionButton(
+                          _isLoading
+                              ? const Center(child: CircularProgressIndicator())
+                              : CustomActionButton(
                             text: AppLocalization.translate("sign_in"),
-                            onTap: () => _goToHome(context),
+                            onTap: () => _handleSignIn(context),
                           ),
                         ],
                       ),

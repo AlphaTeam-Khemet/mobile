@@ -4,8 +4,12 @@ import '../localization/app_localization.dart';
 import '../shared_widgets/custom_text_field.dart';
 import '../shared_widgets/custom_action_button.dart';
 
+import '../core/network/auth_service.dart';
+
 class CreateNewPasswordPage extends StatefulWidget {
-  const CreateNewPasswordPage({Key? key}) : super(key: key);
+  final String email;
+  final String otp;
+  const CreateNewPasswordPage({Key? key, required this.email, required this.otp}) : super(key: key);
 
   @override
   State<CreateNewPasswordPage> createState() => _CreateNewPasswordPageState();
@@ -14,6 +18,7 @@ class CreateNewPasswordPage extends StatefulWidget {
 class _CreateNewPasswordPageState extends State<CreateNewPasswordPage> {
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
+  bool _isLoading = false;
   double _strength = 0.0;
 
   final TextEditingController _newPasswordController = TextEditingController();
@@ -36,7 +41,7 @@ class _CreateNewPasswordPageState extends State<CreateNewPasswordPage> {
     });
   }
 
-  void _savePassword(BuildContext context) {
+  Future<void> _savePassword(BuildContext context) async {
     final newPassword = _newPasswordController.text.trim();
     final confirmPassword = _confirmPasswordController.text.trim();
 
@@ -68,21 +73,33 @@ class _CreateNewPasswordPageState extends State<CreateNewPasswordPage> {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-       SnackBar(
-        content: Text(
-          AppLocalization.translate(
-            "password_updated_successfully",
-          ),
-        ),
-        backgroundColor: Colors.green,
-      ),
-    );
+    setState(() => _isLoading = true);
+    final result = await AuthService().resetPassword(widget.email, widget.otp, newPassword);
+    if (!mounted) return;
+    setState(() => _isLoading = false);
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const SignInPage()),
-    );
+    if (result.success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+         SnackBar(
+          content: Text(
+            AppLocalization.translate(
+              "password_updated_successfully",
+            ),
+          ),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const SignInPage()),
+        (route) => false,
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result.errorMessage ?? 'Failed to reset password'), backgroundColor: Colors.red),
+      );
+    }
   }
 
   @override
@@ -189,7 +206,9 @@ class _CreateNewPasswordPageState extends State<CreateNewPasswordPage> {
               ),
               SizedBox(height: screenHeight * 0.05),
 
-              CustomActionButton(
+              _isLoading
+                  ? const Center(child: CircularProgressIndicator(color: Color(0xFFC9A24D)))
+                  : CustomActionButton(
                 text: AppLocalization.translate("save_password"),
                 onTap: () => _savePassword(context),
               ),

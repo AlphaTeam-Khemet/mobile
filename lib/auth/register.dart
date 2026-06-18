@@ -4,6 +4,8 @@ import 'signin.dart';
 import '../shared_widgets/custom_text_field.dart';
 import '../shared_widgets/password_strength_bar.dart';
 import '../shared_widgets/custom_action_button.dart';
+import '../core/network/auth_service.dart';
+import '../main_tab_home/main_tab_home.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -22,6 +24,9 @@ class _RegisterPageState extends State<RegisterPage> {
   String _email = "";
   String _password = "";
   String _confirmPassword = "";
+
+  final AuthService _authService = AuthService();
+  bool _isLoading = false;
 
   void _goToSignIn(BuildContext context) {
     Navigator.pushReplacement(
@@ -46,74 +51,52 @@ class _RegisterPageState extends State<RegisterPage> {
     return strength.clamp(0, 1);
   }
 
-  void _createAccount(BuildContext context) {
-    if (_fullName.isEmpty ||
-        _email.isEmpty ||
-        _password.isEmpty ||
-        _confirmPassword.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalization.translate("all_fields_are_required"),
-          ),
-          backgroundColor: Colors.red,
-        ),
-      );
+  Future<void> _handleRegister(BuildContext context) async {
+    if (_isLoading) return;
 
+    if (_fullName.isEmpty || _email.isEmpty || _password.isEmpty || _confirmPassword.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalization.translate("all_fields_are_required")), backgroundColor: Colors.red),
+      );
       return;
     }
-
     if (_password.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalization.translate("password_must_be_at_least_6_characters"),
-          ),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text(AppLocalization.translate("password_must_be_at_least_6_characters")), backgroundColor: Colors.red),
       );
-
       return;
     }
-
     if (_password != _confirmPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalization.translate("passwords_do_not_match"),
-          ),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text(AppLocalization.translate("passwords_do_not_match")), backgroundColor: Colors.red),
       );
-
       return;
     }
-
     if (!_agreeToTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalization.translate(
-              "you_must_agree_to_the_terms_privacy_policy",
-            ),
-          ),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text(AppLocalization.translate("you_must_agree_to_the_terms_privacy_policy")), backgroundColor: Colors.red),
       );
-
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          AppLocalization.translate("account_created_successfully"),
-        ),
-        backgroundColor: Colors.green,
-      ),
-    );
+    setState(() => _isLoading = true);
+    final result = await _authService.register(fullName: _fullName, email: _email, password: _password);
+    if (!mounted) return;
+    setState(() => _isLoading = false);
 
-    _goToSignIn(context);
+    if (result.success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalization.translate("account_created_successfully")), backgroundColor: Colors.green),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const MainNavigationPage(isGuest: false)),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result.errorMessage ?? "Registration failed"), backgroundColor: Colors.red),
+      );
+    }
   }
 
   @override
@@ -338,9 +321,11 @@ class _RegisterPageState extends State<RegisterPage> {
 
                           SizedBox(height: screenHeight * 0.03),
 
-                          CustomActionButton(
+                          _isLoading
+                              ? const Center(child: CircularProgressIndicator())
+                              : CustomActionButton(
                               text: AppLocalization.translate("create_account"),
-                            onTap: () => _createAccount(context),
+                            onTap: () => _handleRegister(context),
                           ),
                         ],
                       ),

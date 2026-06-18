@@ -1,15 +1,84 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-
 import '../localization/app_localization.dart';
+import '../shared_widgets/language_manager.dart';
+import '../core/network/scan_service.dart';
+import '../shared_widgets/voice_guide_button.dart';
 
-class TranslationResultPage extends StatelessWidget {
-
+class TranslationResultPage extends StatefulWidget {
   final bool isHieroglyphMode;
+  final String imagePath;
 
   const TranslationResultPage({
     super.key,
     required this.isHieroglyphMode,
+    required this.imagePath,
   });
+
+  @override
+  State<TranslationResultPage> createState() => _TranslationResultPageState();
+}
+
+class _TranslationResultPageState extends State<TranslationResultPage> {
+  bool _isLoading = true;
+  String _title = '';
+  String _description = '';
+  String? _errorMessage;
+  String? _artifactId;
+
+  @override
+  void initState() {
+    super.initState();
+    _processImage();
+  }
+
+  Future<void> _processImage() async {
+    final langCode = LanguageManager.currentLanguage.value;
+    ScanResult result;
+    
+    if (widget.isHieroglyphMode) {
+      result = await ScanService().translateHieroglyph(widget.imagePath, langCode);
+    } else {
+      result = await ScanService().scanArtifact(widget.imagePath, langCode);
+    }
+
+    if (!mounted) return;
+
+    if (result.success && result.data != null) {
+      setState(() {
+        _isLoading = false;
+        if (widget.isHieroglyphMode) {
+          final data = result.data!['data'];
+          _title = AppLocalization.translate("translation_text");
+          
+          if (data?['detection']?['total_symbols'] == 0) {
+             _description = "No clear hieroglyphs were detected in the image. Please try getting closer, ensuring good lighting, and keeping the symbols in focus.";
+          } else {
+             _description = data?['translation']?['text'] ?? "No translation available";
+             if (data?['translation']?['combined_phonetics'] != null && 
+                 data['translation']['combined_phonetics'].toString().isNotEmpty) {
+               _description += "\n\nPhonetics: " + data['translation']['combined_phonetics'];
+             }
+          }
+        } else {
+          final monument = result.data!['monument'];
+          if (monument != null) {
+            _artifactId = monument['id']?.toString() ?? monument['_id']?.toString();
+            _title = monument['name'] ?? 'Recognized Artifact';
+            _description = result.data!['ai_guide_description'] ?? monument['description'] ?? 'No details available.';
+          } else {
+            _title = 'Artifact Not Found';
+            _description = result.data!['message'] ?? 'Could not identify this artifact in the database.';
+          }
+        }
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = result.errorMessage ?? 'An error occurred';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +122,7 @@ class TranslationResultPage extends StatelessWidget {
                   const SizedBox(width: 8),
 
                   Text(
-                    isHieroglyphMode
+                    widget.isHieroglyphMode
                         ? AppLocalization.translate("translation_result")
                         : AppLocalization.translate("artifact_information"),
 
@@ -74,25 +143,35 @@ class TranslationResultPage extends StatelessWidget {
               const SizedBox(height: 22),
 
               ClipRRect(
-
-                borderRadius:
-                BorderRadius.circular(24),
-
-                child: Image.asset(
-
-                  "assets/image/artifact.png",
-
+                borderRadius: BorderRadius.circular(24),
+                child: Image.file(
+                  File(widget.imagePath),
                   width: double.infinity,
-
                   height: 240,
-
                   fit: BoxFit.cover,
                 ),
               ),
 
               const SizedBox(height: 24),
-
-              Expanded(
+              
+              if (_isLoading)
+                const Expanded(
+                  child: Center(
+                    child: CircularProgressIndicator(color: Color(0xFFC9A24D)),
+                  ),
+                )
+              else if (_errorMessage != null)
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      _errorMessage!,
+                      style: const TextStyle(color: Colors.red, fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                )
+              else
+                Expanded(
 
                 child: Container(
 
@@ -137,7 +216,7 @@ class TranslationResultPage extends StatelessWidget {
                           const SizedBox(width: 6),
 
                           Text(
-                            isHieroglyphMode
+                            widget.isHieroglyphMode
                                 ? AppLocalization.translate("translation_result")
                                 : AppLocalization.translate("artifact_information"),
 
@@ -162,9 +241,10 @@ class TranslationResultPage extends StatelessWidget {
                       const SizedBox(height: 26),
 
                       Text(
-                        isHieroglyphMode
+                        _title.isNotEmpty ? _title :
+                        (widget.isHieroglyphMode
                             ? AppLocalization.translate("translation_text")
-                            : AppLocalization.translate("artifact_title"),
+                            : AppLocalization.translate("artifact_title")),
 
                         style: TextStyle(
 
@@ -196,27 +276,37 @@ class TranslationResultPage extends StatelessWidget {
 
                       const SizedBox(height: 22),
 
-                      Text(
-                        isHieroglyphMode
-                            ? AppLocalization.translate("translation_description")
-                            : AppLocalization.translate("artifact_description"),
-                        style: TextStyle(
-
-                          fontSize: 17,
-
-                          color: Colors.black54,
-
-                          height: 1.7,
-
-                          fontWeight: FontWeight.w400,
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Text(
+                            _description,
+                            style: TextStyle(
+                              fontSize: 17,
+                              color: Colors.black54,
+                              height: 1.7,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
                         ),
                       ),
+                      
+                      if (!widget.isHieroglyphMode && _artifactId != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 15),
+                          child: VoiceGuideButton(
+                            artifactId: _artifactId!,
+                            artifactName: _title,
+                            artifactDescription: _description,
+                          ),
+                        ),
                     ],
                   ),
                 ),
               ),
 
               const SizedBox(height: 24),
+
+              if (!_isLoading)
 
 
               Row(

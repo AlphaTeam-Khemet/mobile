@@ -6,6 +6,7 @@ import '../localization/app_localization.dart';
 import '../onboarding/welcome.dart';
 import '../shared_widgets/language_manager.dart';
 import 'package:image_picker/image_picker.dart';
+import '../core/network/user_service.dart';
 
 class ProfilePage extends StatefulWidget {
   final bool isGuest;
@@ -21,10 +22,31 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-
-
-
   bool isEditing = false;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    if (widget.isGuest) {
+      setState(() => isLoading = false);
+      return;
+    }
+    final data = await UserService().getProfile();
+    if (data != null && mounted) {
+      setState(() {
+        fullNameController.text = data['full_name'] ?? 'Alpha Team';
+        emailController.text = data['email'] ?? 'Alpha.Team@Gmail.com';
+        isLoading = false;
+      });
+    } else if (mounted) {
+      setState(() => isLoading = false);
+    }
+  }
 
 
   final TextEditingController fullNameController =
@@ -72,6 +94,14 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        backgroundColor: Color(0xFFF2E8D5),
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFFC9A24D)),
+        ),
+      );
+    }
 
     return Scaffold(
 
@@ -436,21 +466,45 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
 
-                    onPressed: () {
+                    onPressed: () async {
+                      if (widget.isGuest) {
+                        setState(() {
+                          isEditing = false;
+                        });
+                        return;
+                      }
 
                       setState(() {
+                        isLoading = true;
+                      });
+
+                      final success = await UserService().updateProfile(
+                        fullName: fullNameController.text,
+                        languageCode: LanguageManager.currentLanguage.value,
+                      );
+
+                      if (!mounted) return;
+                      
+                      setState(() {
+                        isLoading = false;
                         isEditing = false;
                       });
 
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(
-
-                         SnackBar(
-                          content:
-                          Text(
-                            AppLocalization.translate("profile_updated"),
-                          )                        ),
-                      );
+                      if (success) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(AppLocalization.translate("profile_updated")),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Failed to update profile. Please try again."),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
                     },
 
                     child:  Text(

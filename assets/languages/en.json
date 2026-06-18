@@ -247,5 +247,11 @@
   "deutsch": "🇩🇪 Deutsch",
   "key": "🇪🇬 العربية",
   "english": "🇬🇧 English",
-  "smart_guide": "🏛 SMART GUIDE"
+  "smart_guide": "🏛 SMART GUIDE",
+  "failed_to_load_monuments": "Failed to load monuments. Please check your connection.",
+  "sort": "Sort",
+  "no_description_available": "No description available yet.",
+  "please_register_first_to_save_favorites": "Please register first to save favorites.",
+  "something_went_wrong": "Something went wrong. Please try again.",
+  "search_favorites_hint": "Search your favorites..."
 }

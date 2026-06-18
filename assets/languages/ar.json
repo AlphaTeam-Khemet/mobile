@@ -212,5 +212,11 @@
   "de": "de",
   "en": "en",
   "ru": "ru",
-  "smart_guide": "🏛 دليل ذكي"
+  "smart_guide": "🏛 دليل ذكي",
+  "failed_to_load_monuments": "فشل تحميل المعروضات. يرجى التحقق من الاتصال.",
+  "sort": "ترتيب",
+  "no_description_available": "لا يوجد وصف متاح حالياً.",
+  "please_register_first_to_save_favorites": "يرجى التسجيل أولاً لحفظ المفضلة.",
+  "something_went_wrong": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+  "search_favorites_hint": "ابحث في مفضلتك..."
 }

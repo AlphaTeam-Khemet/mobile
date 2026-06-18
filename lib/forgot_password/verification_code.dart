@@ -3,8 +3,11 @@ import '../localization/app_localization.dart';
 import '../shared_widgets/custom_action_button.dart';
 import 'create_new_password.dart';
 
+import '../core/network/auth_service.dart';
+
 class VerificationCodePage extends StatefulWidget {
-  const VerificationCodePage({Key? key}) : super(key: key);
+  final String email;
+  const VerificationCodePage({Key? key, required this.email}) : super(key: key);
 
   @override
   State<VerificationCodePage> createState() =>
@@ -18,8 +21,8 @@ class _VerificationCodePageState
   List.generate(6, (_) => TextEditingController());
 
   int _secondsRemaining = 59;
-
   bool _canResend = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -54,30 +57,60 @@ class _VerificationCodePageState
     });
   }
 
-  void _verifyCode(BuildContext context) {
+  Future<void> _verifyCode(BuildContext context) async {
+    final otp = _controllers.map((c) => c.text).join();
+    if (otp.length != 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid 6-digit code'), backgroundColor: Colors.red),
+      );
+      return;
+    }
 
-    Navigator.pushReplacement(
+    setState(() => _isLoading = true);
+    final result = await AuthService().verifyResetOtp(widget.email, otp);
+    if (!mounted) return;
+    setState(() => _isLoading = false);
 
-      context,
-
-      MaterialPageRoute(
-
-        builder: (_) =>
-        const CreateNewPasswordPage(),
-      ),
-    );
+    if (result.success) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => CreateNewPasswordPage(email: widget.email, otp: otp),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result.errorMessage ?? 'Invalid verification code'), backgroundColor: Colors.red),
+      );
+    }
   }
 
-  void _resendCode() {
-
+  Future<void> _resendCode() async {
     setState(() {
-
-      _secondsRemaining = 59;
-
-      _canResend = false;
+      _isLoading = true;
+    });
+    
+    final result = await AuthService().forgotPassword(widget.email);
+    if (!mounted) return;
+    
+    setState(() {
+      _isLoading = false;
     });
 
-    _startTimer();
+    if (result.success) {
+      setState(() {
+        _secondsRemaining = 59;
+        _canResend = false;
+      });
+      _startTimer();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Verification code resent'), backgroundColor: Colors.green),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result.errorMessage ?? 'Failed to resend code'), backgroundColor: Colors.red),
+      );
+    }
   }
 
   @override
@@ -316,11 +349,11 @@ class _VerificationCodePageState
                 height: screenHeight * 0.06,
               ),
 
-              CustomActionButton(
-
+              _isLoading
+                  ? const Center(child: CircularProgressIndicator(color: Color(0xFFC9A24D)))
+                  : CustomActionButton(
                 text: AppLocalization.translate("verify_code"),
-                onTap: () =>
-                    _verifyCode(context),
+                onTap: () => _verifyCode(context),
               ),
             ],
           ),

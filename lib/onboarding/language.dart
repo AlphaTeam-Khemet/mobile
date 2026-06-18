@@ -70,39 +70,14 @@ class _LanguageScreenState extends State<LanguageScreen>
     super.dispose();
   }
 
-  void _selectLanguage(
-      BuildContext context,
-      String lang,
-      ) {
-
-    String label = "🇬🇧 English";
-
-    switch (lang) {
-      case "ar":
-        label = "🇪🇬 العربية";
-        break;
-
-      case "de":
-        label = "🇩🇪 Deutsch";
-        break;
-
-      case "ru":
-        label = "🇷🇺 Русский";
-        break;
-
-      default:
-        label = "🇬🇧 English";
-    }
-
-    LanguageManager.currentLanguage.value = label;
+  void _selectLanguage(BuildContext context, String lang) {
+    LanguageManager.currentLanguage.value = lang;
 
     Future.delayed(
       const Duration(milliseconds: 300),
-          () {
+      () {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (_) => const Onboarding1(),
-          ),
+          MaterialPageRoute(builder: (_) => const Onboarding1()),
         );
       },
     );

@@ -23,7 +23,7 @@ android {
     defaultConfig {
         applicationId = "com.example.graduation_project"
 
-        minSdk = 23
+        minSdk = flutter.minSdkVersion
 
         targetSdk = 36
 

@@ -19,7 +19,7 @@ class ScanPage extends StatefulWidget {
 
 class _ScanPageState extends State<ScanPage> {
   CameraController? _cameraController;
-  bool isHieroglyphMode = true;
+  bool isHieroglyphMode = false;
   bool isFlashOn = false;
 
   bool isLoading = true;
@@ -38,7 +38,9 @@ class _ScanPageState extends State<ScanPage> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Camera permission denied')));
-
+      setState(() {
+        isLoading = false;
+      });
       return;
     }
 
@@ -46,7 +48,11 @@ class _ScanPageState extends State<ScanPage> {
 
     final firstCamera = cameras.first;
 
-    _cameraController = CameraController(firstCamera, ResolutionPreset.medium);
+    _cameraController = CameraController(
+      firstCamera, 
+      ResolutionPreset.max, 
+      enableAudio: false,
+    );
 
     await _cameraController!.initialize();
 
@@ -69,15 +75,16 @@ class _ScanPageState extends State<ScanPage> {
 
   Future<void> _openGallery() async {
     final ImagePicker picker = ImagePicker();
-
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
-    if (image != null) {
+    if (image != null && mounted) {
       Navigator.push(
         context,
-
         MaterialPageRoute(
-          builder: (_) => ImagePreviewPage(imagePath: image.path),
+          builder: (_) => TranslationResultPage(
+            isHieroglyphMode: isHieroglyphMode,
+            imagePath: image.path,
+          ),
         ),
       );
     }
@@ -281,14 +288,15 @@ class _ScanPageState extends State<ScanPage> {
                           !_cameraController!.value.isInitialized)
                         return;
 
-                      await _cameraController!.takePicture();
+                      final XFile image = await _cameraController!.takePicture();
 
+                      if (!mounted) return;
                       Navigator.push(
                         context,
-
                         MaterialPageRoute(
                           builder: (_) => TranslationResultPage(
                             isHieroglyphMode: isHieroglyphMode,
+                            imagePath: image.path,
                           ),
                         ),
                       );

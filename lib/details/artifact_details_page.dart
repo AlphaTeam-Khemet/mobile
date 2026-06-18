@@ -1,28 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../chat/chat_bot_page.dart';
 import '../localization/app_localization.dart';
+import '../shared_widgets/voice_guide_button.dart';
 
 class ArtifactDetailsPage extends StatefulWidget {
+  final String id;
   final String title;
   final String imagePath;
   final String dynasty;
   final String material;
   final String description;
-
   final List<Map<String, dynamic>> favorites;
-  final Function() onFavoriteChanged;
+  final void Function(Map<String, dynamic>) onToggleFavorite;
 
   const ArtifactDetailsPage({
-    Key? key,
-    required this.title,
-    required this.imagePath,
-    required this.dynasty,
-    required this.material,
-    required this.description,
-    required this.favorites,
-    required this.onFavoriteChanged,
+    Key? key, required this.id, required this.title, required this.imagePath, required this.dynasty,
+    required this.material, required this.description, required this.favorites, required this.onToggleFavorite,
   }) : super(key: key);
 
   @override
@@ -44,9 +40,7 @@ class _ArtifactDetailsPageState extends State<ArtifactDetailsPage>
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
 
-    final bool isFavorite = widget.favorites.any(
-      (item) => item['title'] == widget.title,
-    );
+    final bool isFavorite = widget.favorites.any((item) => item['id'] == widget.id);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF2E8D5),
@@ -59,14 +53,23 @@ class _ArtifactDetailsPageState extends State<ArtifactDetailsPage>
               bottomRight: Radius.circular(40),
             ),
 
-            child: Image.asset(
-              widget.imagePath,
-
+            child: CachedNetworkImage(
+              imageUrl: widget.imagePath,
               width: double.infinity,
-
               height: screenHeight * 0.65,
-
               fit: BoxFit.cover,
+              placeholder: (context, url) => Container(
+                width: double.infinity,
+                height: screenHeight * 0.65,
+                color: Colors.grey.shade200,
+                child: const Center(child: CircularProgressIndicator()),
+              ),
+              errorWidget: (context, url, error) => Container(
+                width: double.infinity,
+                height: screenHeight * 0.65,
+                color: Colors.grey.shade300,
+                child: const Center(child: Icon(Icons.image_not_supported, size: 60, color: Colors.grey)),
+              ),
             ),
           ),
 
@@ -107,39 +110,13 @@ class _ArtifactDetailsPageState extends State<ArtifactDetailsPage>
 
                         color: isFavorite ? Colors.redAccent : Colors.white,
 
-                        onPressed: () {
-                          final alreadyExists = widget.favorites.any(
-                            (item) => item['title'] == widget.title,
-                          );
-
-                          setState(() {
-                            if (alreadyExists) {
-                              widget.favorites.removeWhere(
-                                (item) => item['title'] == widget.title,
-                              );
-
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(AppLocalization.translate("removed_from_favorites")),
-                              ));
-                            } else {
-                              widget.favorites.add({
-                                'title': widget.title,
-                                'subtitle': widget.description,
-                                'image': widget.imagePath,
-                                'tags': [widget.dynasty, widget.material],
-                              });
-
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(AppLocalization.translate("added_to_favorites")),
-                                ),
-                              );
-                            }
-                          });
-
-                          widget.onFavoriteChanged();
-                        },
+                        onPressed: () => widget.onToggleFavorite({
+                          'id': widget.id,
+                          'title': widget.title,
+                          'subtitle': widget.description,
+                          'image': widget.imagePath,
+                          'tags': [widget.dynasty, widget.material],
+                        }),
                       ),
                     ],
                   ),
@@ -389,24 +366,20 @@ class _ArtifactDetailsPageState extends State<ArtifactDetailsPage>
   Widget _buildOverviewTab() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-
-      children:  [
-        Text(
-          AppLocalization.translate("golden_face_eternity"),
-          style: TextStyle(
-            fontWeight: FontWeight.w800,
-
-            fontSize: 18,
-
-            color: Colors.black,
-          ),
+      children: [
+        VoiceGuideButton(
+          artifactId: widget.id,
+          artifactName: widget.title,
+          artifactDescription: widget.description,
         ),
-
-        SizedBox(height: 8),
-
-        Text(
-          AppLocalization.translate("artifact_overview_description"),
-          style: TextStyle(fontSize: 14, color: Colors.black87, height: 1.5),
+        const SizedBox(height: 16),
+        Expanded(
+          child: SingleChildScrollView(
+            child: Text(
+              widget.description.isNotEmpty ? widget.description : AppLocalization.translate("no_description_available"),
+              style: TextStyle(fontSize: 14, color: Colors.black87, height: 1.5),
+            ),
+          ),
         ),
       ],
     );

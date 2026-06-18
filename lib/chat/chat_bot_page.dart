@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
-
 import '../localization/app_localization.dart';
+import '../core/network/chat_service.dart';
 
 class ChatItem {
+  String? id;
   String title;
-
   List<Map<String, dynamic>> messages;
 
-  ChatItem({required this.title, required this.messages});
+  ChatItem({this.id, required this.title, required this.messages});
 }
 
 class ChatBotPage extends StatefulWidget {
   final String? artifactName;
-
   const ChatBotPage({Key? key, this.artifactName}) : super(key: key);
 
   @override
@@ -21,119 +20,178 @@ class ChatBotPage extends StatefulWidget {
 
 class _ChatBotPageState extends State<ChatBotPage> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
   final TextEditingController messageController = TextEditingController();
-
   final ScrollController scrollController = ScrollController();
 
   List<ChatItem> recentChats = [];
-
-  List<Map<String, dynamic>> messages = [
-    {
-      "isUser": false,
-      "message": AppLocalization.translate("welcome_to_khemet_ai_chat_intro"),
-    },
-  ];
-
+  List<Map<String, dynamic>> messages = [];
   bool isFirstMessage = true;
-
   int? currentChatIndex;
 
   @override
   void initState() {
     super.initState();
+    _resetChat();
+    _loadConversations();
+  }
 
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (widget.artifactName != null && widget.artifactName!.isNotEmpty) {
-        askAboutArtifact(widget.artifactName!);
-      }
+  void _resetChat() {
+    setState(() {
+      messages = [
+        {
+          "isUser": false,
+          "message": AppLocalization.translate("welcome_to_khemet_ai_chat_intro"),
+        },
+      ];
+      isFirstMessage = true;
+      currentChatIndex = null;
     });
   }
 
-  void askAboutArtifact(String artifactName) async {
-    if (isFirstMessage) {
-      recentChats.insert(0, ChatItem(title: artifactName, messages: []));
-
-      currentChatIndex = 0;
-
-      isFirstMessage = false;
-    }
-
-    setState(() {
-      messages.add({"isUser": true, "message": artifactName});
-
-      recentChats[currentChatIndex!].messages = List.from(messages);
-    });
-
-    scrollToBottom();
-
-    await Future.delayed(const Duration(milliseconds: 700));
-
-    setState(() {
-      messages.add({
-        "isUser": false,
-        "messageKey": "searching_artifact_info",
-        "artifactName": artifactName,
+  Future<void> _loadConversations() async {
+    final convos = await ChatService().getConversations();
+    if (mounted) {
+      setState(() {
+        final fetchedChats = convos
+            .map((c) => ChatItem(id: c['id']?.toString(), title: c['title'] ?? 'New Chat', messages: []))
+            .toList();
+            
+        if (currentChatIndex != null && recentChats.isNotEmpty) {
+          final activeChat = recentChats[currentChatIndex!];
+          if (activeChat.id == null) {
+            fetchedChats.insert(0, activeChat);
+            currentChatIndex = 0;
+          } else {
+            final index = fetchedChats.indexWhere((c) => c.id == activeChat.id);
+            if (index != -1) {
+              fetchedChats[index].messages = activeChat.messages;
+              currentChatIndex = index;
+            } else {
+              fetchedChats.insert(0, activeChat);
+              currentChatIndex = 0;
+            }
+          }
+        }
+        recentChats = fetchedChats;
       });
 
-      recentChats[currentChatIndex!].messages = List.from(messages);
-    });
-
-    scrollToBottom();
+      if (widget.artifactName != null && widget.artifactName!.isNotEmpty) {
+        _sendUserMessage("Tell me about ${widget.artifactName}");
+      }
+    }
   }
 
-  void sendMessage() async {
-    if (messageController.text.trim().isEmpty) {
-      return;
-    }
-
-    String userMessage = messageController.text.trim();
-
+  Future<void> _sendUserMessage(String userMessage) async {
     if (isFirstMessage) {
       recentChats.insert(0, ChatItem(title: userMessage, messages: []));
-
       currentChatIndex = 0;
-
       isFirstMessage = false;
     }
 
     setState(() {
       messages.add({"isUser": true, "message": userMessage});
-
       recentChats[currentChatIndex!].messages = List.from(messages);
+      messages.add({
+        "isUser": false,
+        "message": "Thinking...",
+        "isLoading": true,
+      });
     });
-
-    messageController.clear();
 
     scrollToBottom();
 
-    await Future.delayed(const Duration(milliseconds: 700));
+    try {
+      final result = await ChatService().askQuestion(
+          userMessage,
+          conversationId: recentChats[currentChatIndex!].id);
+          
+      if (!mounted) return;
 
-    setState(() {
-      messages.add({
-        "isUser": false,
-
-        "message":
-            "Tutankhamun was an ancient Egyptian pharaoh of the 18th dynasty. He became king at age 9 and is famous for his nearly intact golden tomb discovered in 1922.",
+      setState(() {
+        messages.removeWhere((m) => m['isLoading'] == true);
+        if (recentChats[currentChatIndex!].id == null) {
+          recentChats[currentChatIndex!].id = result?['conversation_id']?.toString();
+          recentChats[currentChatIndex!].title = result?['conversation_title'] ?? userMessage;
+        }
+        messages.add({
+          "isUser": false,
+          "message": result?['answer'] ?? result?['response'] ?? 'Sorry, I have no information on that.',
+        });
+        recentChats[currentChatIndex!].messages = List.from(messages);
       });
-
-      recentChats[currentChatIndex!].messages = List.from(messages);
-    });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        messages.removeWhere((m) => m['isLoading'] == true);
+        messages.add({
+          "isUser": false,
+          "message": 'Error: ${e.toString()}',
+        });
+        recentChats[currentChatIndex!].messages = List.from(messages);
+      });
+    }
 
     scrollToBottom();
   }
 
+  void askAboutArtifact(String artifactName) {
+    _sendUserMessage(artifactName);
+  }
+
+  void sendMessage() {
+    if (messageController.text.trim().isEmpty) return;
+    String text = messageController.text.trim();
+    messageController.clear();
+    _sendUserMessage(text);
+  }
+
+  Future<void> _loadChat(int index) async {
+    final chat = recentChats[index];
+    setState(() {
+      currentChatIndex = index;
+      isFirstMessage = false;
+      messages = [
+        {
+          "isUser": false,
+          "message": "Loading chat history...",
+          "isLoading": true,
+        }
+      ];
+    });
+    
+    Navigator.pop(context); // Close drawer
+
+    if (chat.id != null) {
+      final data = await ChatService().getConversationMessages(chat.id!);
+      if (mounted) {
+        setState(() {
+          messages.clear();
+          if (data != null && data['messages'] != null) {
+            for (var m in data['messages']) {
+              messages.add({
+                "isUser": m['role'] == 'user',
+                "message": m['content'],
+              });
+            }
+            chat.messages = List.from(messages);
+          }
+        });
+        scrollToBottom();
+      }
+    } else {
+      setState(() {
+        messages = List.from(chat.messages);
+      });
+      scrollToBottom();
+    }
+  }
+
   void scrollToBottom() {
     Future.delayed(const Duration(milliseconds: 300), () {
-      if (!scrollController.hasClients) {
-        return;
-      }
-
+      if (!scrollController.hasClients) return;
       scrollController.animateTo(
         scrollController.position.maxScrollExtent,
-
         duration: const Duration(milliseconds: 400),
-
         curve: Curves.easeOut,
       );
     });
@@ -202,20 +260,7 @@ class _ChatBotPageState extends State<ChatBotPage> {
                 title: Text(AppLocalization.translate("new_chat")),
                 onTap: () {
                   Navigator.pop(context);
-
-                  setState(() {
-                    messages = [
-                      {
-                        "isUser": false,
-                        "message":
-                            "Welcome to KHEMET AI.\nAsk me anything about ancient Egypt, artifacts, museums, kings, or history.",
-                      },
-                    ];
-
-                    isFirstMessage = true;
-
-                    currentChatIndex = null;
-                  });
+                  _resetChat();
                 },
               ),
 
@@ -270,19 +315,7 @@ class _ChatBotPageState extends State<ChatBotPage> {
                               ),
 
                               child: ListTile(
-                                onTap: () {
-                                  setState(() {
-                                    messages = List.from(chat.messages);
-
-                                    currentChatIndex = index;
-
-                                    isFirstMessage = false;
-                                  });
-
-                                  Navigator.pop(context);
-
-                                  scrollToBottom();
-                                },
+                                onTap: () => _loadChat(index),
 
                                 leading: Container(
                                   width: 34,
@@ -377,13 +410,19 @@ class _ChatBotPageState extends State<ChatBotPage> {
                                                             ),
                                                       ),
 
-                                                  onPressed: () {
+                                                  onPressed: () async {
+                                                    final newTitle = editController.text.trim();
+                                                    final chatId = chat.id;
+                                                    
                                                     setState(() {
-                                                      chat.title =
-                                                          editController.text;
+                                                      chat.title = newTitle;
                                                     });
 
                                                     Navigator.pop(context);
+                                                    
+                                                    if (chatId != null && newTitle.isNotEmpty) {
+                                                      await ChatService().updateConversationTitle(chatId, newTitle);
+                                                    }
                                                   },
 
                                                   child: Text(
@@ -412,23 +451,20 @@ class _ChatBotPageState extends State<ChatBotPage> {
                                     ),
 
                                     GestureDetector(
-                                      onTap: () {
+                                      onTap: () async {
+                                        final chatId = recentChats[index].id;
                                         setState(() {
                                           recentChats.removeAt(index);
-
-                                          if (recentChats.isEmpty) {
-                                            messages = [
-                                              {
-                                                "isUser": false,
-
-                                                "message":
-                                                    "Welcome to KHEMET AI.\nAsk me anything about ancient Egypt.",
-                                              },
-                                            ];
-
-                                            isFirstMessage = true;
+                                          if (currentChatIndex == index) {
+                                            _resetChat();
+                                          } else if (currentChatIndex != null && currentChatIndex! > index) {
+                                            currentChatIndex = currentChatIndex! - 1;
                                           }
                                         });
+                                        
+                                        if (chatId != null) {
+                                          await ChatService().deleteConversation(chatId);
+                                        }
                                       },
 
                                       child: const Padding(
@@ -603,14 +639,20 @@ class _ChatBotPageState extends State<ChatBotPage> {
                             ],
                           ),
 
-                          child: Text(
+                          child: message["isLoading"] == true
+                                ? const Center(
+                                    child: SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(color: Colors.black54, strokeWidth: 2),
+                                    ),
+                                  )
+                                : Text(
                             message["message"],
 
                             style: TextStyle(
                               fontSize: screenWidth < 400 ? 14 : 16,
-
                               height: 1.5,
-
                               color: isUser ? Colors.black : Colors.black87,
                             ),
                           ),

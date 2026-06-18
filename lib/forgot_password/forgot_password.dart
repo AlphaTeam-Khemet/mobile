@@ -2,16 +2,51 @@ import 'package:flutter/material.dart';
 import '../localization/app_localization.dart';
 import 'verification_code.dart';
 
-class ForgotPasswordPage extends StatelessWidget {
+import '../core/network/auth_service.dart';
+
+class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({Key? key}) : super(key: key);
 
-  void _goToOtpPage(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const VerificationCodePage(),
-      ),
-    );
+  @override
+  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
+}
+
+class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
+  final TextEditingController _emailController = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _goToOtpPage(BuildContext context) async {
+    final email = _emailController.text.trim();
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter your email'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    final result = await AuthService().forgotPassword(email);
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+
+    if (result.success) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => VerificationCodePage(email: email),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result.errorMessage ?? 'Failed to send OTP'), backgroundColor: Colors.red),
+      );
+    }
   }
 
   @override
@@ -110,6 +145,7 @@ class ForgotPasswordPage extends StatelessWidget {
               ),
 
               TextField(
+                controller: _emailController,
                 decoration: InputDecoration(
                   hintText:
                   AppLocalization.translate(
@@ -139,8 +175,7 @@ class ForgotPasswordPage extends StatelessWidget {
                 screenHeight * 0.06,
 
                 child: ElevatedButton(
-                  onPressed: () =>
-                      _goToOtpPage(context),
+                  onPressed: _isLoading ? null : () => _goToOtpPage(context),
 
                   style:
                   ElevatedButton.styleFrom(
@@ -159,7 +194,7 @@ class ForgotPasswordPage extends StatelessWidget {
                     ),
                   ),
 
-                  child: Text(
+                  child: _isLoading ? const CircularProgressIndicator(color: Colors.white) : Text(
                     AppLocalization.translate(
                       "send_code",
                     ),
