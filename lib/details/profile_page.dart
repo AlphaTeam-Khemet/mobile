@@ -7,6 +7,9 @@ import '../onboarding/welcome.dart';
 import '../shared_widgets/language_manager.dart';
 import 'package:image_picker/image_picker.dart';
 import '../core/network/user_service.dart';
+import '../core/network/chat_service.dart';
+import '../core/network/scan_service.dart';
+import '../core/network/auth_service.dart';
 
 class ProfilePage extends StatefulWidget {
   final bool isGuest;
@@ -24,6 +27,8 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   bool isEditing = false;
   bool isLoading = true;
+  int _chatsCount = 0;
+  int _scansCount = 0;
 
   @override
   void initState() {
@@ -36,24 +41,36 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() => isLoading = false);
       return;
     }
-    final data = await UserService().getProfile();
-    if (data != null && mounted) {
+    final results = await Future.wait([
+      UserService().getProfile(),
+      ChatService().getConversations(),
+      ScanService().getScanHistory(LanguageManager.currentLanguage.value),
+    ]);
+
+    final profileData = results[0] as Map<String, dynamic>?;
+    final conversations = results[1] as List<Map<String, dynamic>>;
+    final scanResult = results[2] as ScanResult;
+
+    if (mounted) {
       setState(() {
-        fullNameController.text = data['full_name'] ?? 'Alpha Team';
-        emailController.text = data['email'] ?? 'Alpha.Team@Gmail.com';
+        if (profileData != null) {
+          fullNameController.text = profileData['full_name'] ?? '';
+          emailController.text = profileData['email'] ?? '';
+        }
+        _chatsCount = conversations.length;
+        final history = scanResult.data?['history'];
+        _scansCount = (history is List) ? history.length : 0;
         isLoading = false;
       });
-    } else if (mounted) {
-      setState(() => isLoading = false);
     }
   }
 
 
   final TextEditingController fullNameController =
-  TextEditingController(text: "Alpha Team");
+      TextEditingController();
 
   final TextEditingController emailController =
-  TextEditingController(text: "Alpha.Team@Gmail.com");
+      TextEditingController();
 
 
   final List<Map<String, String>> languages = [
@@ -61,6 +78,9 @@ class _ProfilePageState extends State<ProfilePage> {
     {"code": "ar", "label": "🇪🇬 العربية"},
     {"code": "de", "label": "🇩🇪 Deutsch"},
     {"code": "ru", "label": "🇷🇺 Русский"},
+    {"code": "fr", "label": "🇫🇷 Français"},
+    {"code": "es", "label": "🇪🇸 Español"},
+    {"code": "zh", "label": "🇨🇳 中文"},
   ];
 
 
@@ -570,14 +590,16 @@ class _ProfilePageState extends State<ProfilePage> {
 
                     _buildActivityCard(
                       imagePath: "assets/icons/chat.png",
-                      title: AppLocalization.translate("ai_chat"),                      count: "0",
+                      title: AppLocalization.translate("ai_chat"),
+                      count: _chatsCount.toString(),
                     ),
 
                     const SizedBox(height: 18),
 
                     _buildActivityCard(
                       imagePath: "assets/icons/scan.png",
-                      title: AppLocalization.translate("uploaded_scans"),                      count: "0",
+                      title: AppLocalization.translate("uploaded_scans"),
+                      count: _scansCount.toString(),
                     ),
                   ],
                 ),
@@ -604,25 +626,25 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
 
-                  onPressed: () {
-
+                  onPressed: () async {
                     if (widget.isGuest) {
-
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const SignInPage(),
                         ),
                       );
-
                     } else {
-
+                      // Properly call logout: revoke server-side refresh token
+                      // and clear both tokens from SharedPreferences.
+                      await AuthService().logout();
+                      if (!mounted) return;
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const WelcomePage(),
                         ),
-                            (route) => false,
+                        (route) => false,
                       );
                     }
                   },

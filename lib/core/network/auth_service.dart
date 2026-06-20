@@ -27,12 +27,15 @@ class AuthService {
     String preferredLanguage = 'en',
   }) async {
     try {
-      final response = await _dio.post('/auth/register', data: {
-        'email': email,
-        'password': password,
-        'full_name': fullName,
-        'preferred_language': _languageIds[preferredLanguage] ?? 1,
-      });
+      final response = await _dio.post(
+        '/auth/register',
+        data: {
+          'email': email,
+          'password': password,
+          'full_name': fullName,
+          'preferred_language': _languageIds[preferredLanguage] ?? 1,
+        },
+      );
       await _storeTokens(response.data);
       return AuthResult(success: true);
     } on DioException catch (e) {
@@ -45,10 +48,10 @@ class AuthService {
     required String password,
   }) async {
     try {
-      final response = await _dio.post('/auth/login', data: {
-        'email': email,
-        'password': password,
-      });
+      final response = await _dio.post(
+        '/auth/login',
+        data: {'email': email, 'password': password},
+      );
       await _storeTokens(response.data);
       return AuthResult(success: true);
     } on DioException catch (e) {
@@ -65,22 +68,46 @@ class AuthService {
     }
   }
 
-  Future<AuthResult> verifyResetOtp(String email, String otp) async {
+  Future<AuthResult> verifyEmail(String otp) async {
     try {
-      await _dio.post('/auth/verify-reset-otp', data: {'email': email, 'otp': otp});
+      await _dio.post('/auth/verify-email', data: {'otp': otp});
       return AuthResult(success: true);
     } on DioException catch (e) {
       return AuthResult(success: false, errorMessage: _extractError(e));
     }
   }
 
-  Future<AuthResult> resetPassword(String email, String otp, String newPassword) async {
+  Future<AuthResult> resendEmailVerification() async {
     try {
-      await _dio.post('/auth/reset-password', data: {
-        'email': email,
-        'otp': otp,
-        'new_password': newPassword,
-      });
+      await _dio.post('/auth/resend-email-verification');
+      return AuthResult(success: true);
+    } on DioException catch (e) {
+      return AuthResult(success: false, errorMessage: _extractError(e));
+    }
+  }
+
+  Future<AuthResult> verifyResetOtp(String email, String otp) async {
+    try {
+      await _dio.post(
+        '/auth/verify-reset-otp',
+        data: {'email': email, 'otp': otp},
+      );
+      return AuthResult(success: true);
+    } on DioException catch (e) {
+      return AuthResult(success: false, errorMessage: _extractError(e));
+    }
+  }
+
+  Future<AuthResult> resetPassword(
+    String email,
+    String otp,
+    String newPassword,
+  ) async {
+    try {
+      await _dio.post(
+        '/auth/reset-password',
+        data: {'email': email, 'otp': otp, 'new_password': newPassword},
+      );
       return AuthResult(success: true);
     } on DioException catch (e) {
       return AuthResult(success: false, errorMessage: _extractError(e));
@@ -91,14 +118,18 @@ class AuthService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final refreshToken = prefs.getString('refresh_token');
-      
+
       if (refreshToken == null) {
-        return AuthResult(success: false, errorMessage: 'No refresh token available');
+        return AuthResult(
+          success: false,
+          errorMessage: 'No refresh token available',
+        );
       }
 
-      final response = await _dio.post('/auth/refresh', data: {
-        'token': refreshToken,
-      });
+      final response = await _dio.post(
+        '/auth/refresh',
+        data: {'refresh_token': refreshToken},
+      );
       await _storeTokens(response.data);
       return AuthResult(success: true);
     } on DioException catch (e) {
@@ -110,16 +141,14 @@ class AuthService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final refreshToken = prefs.getString('refresh_token');
-      
+
       if (refreshToken != null) {
-        await _dio.post('/auth/logout', data: {
-          'token': refreshToken,
-        });
+        await _dio.post('/auth/logout', data: {'refresh_token': refreshToken});
       }
-      
+
       await prefs.remove('auth_token');
       await prefs.remove('refresh_token');
-      
+
       return AuthResult(success: true);
     } on DioException catch (e) {
       return AuthResult(success: false, errorMessage: _extractError(e));

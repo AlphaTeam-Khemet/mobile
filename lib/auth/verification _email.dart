@@ -3,41 +3,37 @@ import 'package:flutter/material.dart';
 import '../auth/register.dart';
 import '../localization/app_localization.dart';
 import '../main_tab_home/main_tab_home.dart';
+import '../core/network/auth_service.dart';
 
 class VerificationEmailPage extends StatefulWidget {
   final String email;
 
-  const VerificationEmailPage({
-    Key? key,
-    required this.email,
-  }) : super(key: key);
+  const VerificationEmailPage({Key? key, required this.email})
+    : super(key: key);
 
   @override
-  State<VerificationEmailPage> createState() =>
-      _VerificationEmailPageState();
+  State<VerificationEmailPage> createState() => _VerificationEmailPageState();
 }
 
-class _VerificationEmailPageState
-    extends State<VerificationEmailPage> {
-
-  final List<TextEditingController> otpControllers =
-  List.generate(
+class _VerificationEmailPageState extends State<VerificationEmailPage> {
+  final List<TextEditingController> otpControllers = List.generate(
     6,
-        (_) => TextEditingController(),
+    (_) => TextEditingController(),
   );
 
   bool isLoading = false;
   bool isResending = false;
 
-  String get otp =>
-      otpControllers.map((e) => e.text).join();
+  String get otp => otpControllers.map((e) => e.text).join();
 
   Future<void> verifyEmail() async {
     if (otp.length != 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-         SnackBar(
-          content:
-          Text(AppLocalization.translate("please_enter_the_6_digit_code"),),
+        SnackBar(
+          content: Text(
+            AppLocalization.translate("please_enter_the_6_digit_code"),
+          ),
+          backgroundColor: Colors.red,
         ),
       );
       return;
@@ -47,34 +43,67 @@ class _VerificationEmailPageState
       isLoading = true;
     });
 
-    await Future.delayed(
-      const Duration(seconds: 1),
-    );
+    final result = await AuthService().verifyEmail(otp);
 
     if (!mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-       SnackBar(
-        content:
-        Text(AppLocalization.translate("email_verified_successfully")    )  ),
-    );
+    setState(() {
+      isLoading = false;
+    });
 
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(
-        builder: (_) =>
-        const MainNavigationPage(),
-      ),
-          (route) => false,
-    );
+    if (result.success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalization.translate("email_verified_successfully"),
+          ),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const MainNavigationPage()),
+        (route) => false,
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result.errorMessage ?? "Verification failed"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Future<void> resendCode() async {
-    ScaffoldMessenger.of(context).showSnackBar(
-       SnackBar(
-        content:
-        Text(AppLocalization.translate("verification_code_resent")) ),
-    );
+    setState(() {
+      isResending = true;
+    });
+
+    final result = await AuthService().resendEmailVerification();
+
+    if (!mounted) return;
+
+    setState(() {
+      isResending = false;
+    });
+
+    if (result.success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalization.translate("verification_code_resent")),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result.errorMessage ?? "Failed to resend code"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Widget otpField(int index) {
@@ -85,18 +114,12 @@ class _VerificationEmailPageState
         keyboardType: TextInputType.number,
         textAlign: TextAlign.center,
         maxLength: 1,
-        style: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         decoration: InputDecoration(
           counterText: "",
           filled: true,
           fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderRadius:
-            BorderRadius.circular(12),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
         onChanged: (value) {
           if (value.isNotEmpty && index < 5) {
@@ -104,8 +127,7 @@ class _VerificationEmailPageState
           }
 
           if (value.isEmpty && index > 0) {
-            FocusScope.of(context)
-                .previousFocus();
+            FocusScope.of(context).previousFocus();
           }
         },
       ),
@@ -114,8 +136,7 @@ class _VerificationEmailPageState
 
   @override
   void dispose() {
-    for (var controller
-    in otpControllers) {
+    for (var controller in otpControllers) {
       controller.dispose();
     }
     super.dispose();
@@ -123,51 +144,36 @@ class _VerificationEmailPageState
 
   @override
   Widget build(BuildContext context) {
-    final height =
-        MediaQuery.of(context).size.height;
-    final width =
-        MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor:
-      const Color(0xFFE8DED1),
+      backgroundColor: const Color(0xFFE8DED1),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding:
-          EdgeInsets.symmetric(
-            horizontal: width * 0.05,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: width * 0.05),
           child: Column(
             children: [
               SizedBox(height: height * 0.02),
 
               Align(
-                alignment:
-                Alignment.centerLeft,
+                alignment: Alignment.centerLeft,
                 child: IconButton(
                   onPressed: () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => const RegisterPage(),
-                      ),
+                      MaterialPageRoute(builder: (_) => const RegisterPage()),
                     );
                   },
-                  icon: const Icon(
-                    Icons.arrow_back_ios,
-                  ),
+                  icon: const Icon(Icons.arrow_back_ios),
                 ),
               ),
 
               SizedBox(height: height * 0.01),
 
-               Text(
+              Text(
                 AppLocalization.translate("verification_email"),
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight:
-                  FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
               ),
 
               SizedBox(height: height * 0.03),
@@ -191,41 +197,41 @@ class _VerificationEmailPageState
               SizedBox(height: height * 0.03),
 
               Text(
-                AppLocalization.translate("enter_the_verification_code_sent_to_n_widget_email")
-                    .replaceAll("\${widget.email}", widget.email),
+                AppLocalization.translate(
+                  "enter_the_verification_code_sent_to_n_widget_email",
+                ).replaceAll("\${widget.email}", widget.email),
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 15,
-                ),
+                style: const TextStyle(fontSize: 15),
               ),
 
               SizedBox(height: height * 0.03),
 
               Row(
-                mainAxisAlignment:
-                MainAxisAlignment
-                    .spaceBetween,
-                children: List.generate(
-                  6,
-                      (index) =>
-                      otpField(index),
-                ),
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: List.generate(6, (index) => otpField(index)),
               ),
 
               SizedBox(height: height * 0.03),
 
               GestureDetector(
-                onTap: resendCode,
-                child:  Text(
-                  AppLocalization.translate("resend_code"),
-                  style: TextStyle(
-                    color:
-                    Color(0xFFC89B3C),
-                    fontWeight:
-                    FontWeight.bold,
-                    letterSpacing: 1,
-                  ),
-                ),
+                onTap: isResending ? null : resendCode,
+                child: isResending
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: Color(0xFFC89B3C),
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : Text(
+                        AppLocalization.translate("resend_code"),
+                        style: TextStyle(
+                          color: Color(0xFFC89B3C),
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
+                        ),
+                      ),
               ),
 
               SizedBox(height: height * 0.04),
@@ -234,42 +240,23 @@ class _VerificationEmailPageState
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
-                  onPressed: isLoading
-                      ? null
-                      : verifyEmail,
-                  style:
-                  ElevatedButton.styleFrom(
-                    backgroundColor:
-                    const Color(
-                      0xFFC89B3C,
-                    ),
-                    shape:
-                    RoundedRectangleBorder(
-                      borderRadius:
-                      BorderRadius
-                          .circular(
-                        15,
-                      ),
+                  onPressed: isLoading ? null : verifyEmail,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFC89B3C),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
                     ),
                   ),
                   child: isLoading
-                      ? const CircularProgressIndicator(
-                    color:
-                    Colors.white,
-                  )
+                      ? const CircularProgressIndicator(color: Colors.white)
                       : Text(
-                    AppLocalization.translate("verify_code"),
-                    style:
-                    TextStyle(
-                      color:
-                      Colors.white,
-                      fontSize:
-                      16,
-                      fontWeight:
-                      FontWeight
-                          .bold,
-                    ),
-                  ),
+                          AppLocalization.translate("verify_code"),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ),
 
@@ -279,21 +266,16 @@ class _VerificationEmailPageState
                 onPressed: () {
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                      const RegisterPage(),
-                    ),
-                        (route) => false,
+                    MaterialPageRoute(builder: (_) => const RegisterPage()),
+                    (route) => false,
                   );
                 },
-                child:
-                  Text(AppLocalization.translate("back_to_register"),
+                child: Text(
+                  AppLocalization.translate("back_to_register"),
                   style: TextStyle(
-                    color:
-                    Colors.black54,
+                    color: Colors.black54,
                     fontSize: 16,
-                    fontWeight:
-                    FontWeight.w500,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),

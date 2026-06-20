@@ -6,7 +6,6 @@ import 'package:camera/camera.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../forgot_password/verification_code.dart';
 import '../localization/app_localization.dart';
 import 'TranslationResultPage.dart';
 

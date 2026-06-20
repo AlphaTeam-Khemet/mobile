@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'dio_client.dart';
 
 class ChatService {
@@ -9,7 +10,7 @@ class ChatService {
       final response = await _dio.get('/ai-guide/conversations');
       return List<Map<String, dynamic>>.from(response.data);
     } catch (e) {
-      print('Error getting conversations: $e');
+      debugPrint('Error getting conversations: $e');
       return [];
     }
   }
@@ -19,7 +20,7 @@ class ChatService {
       final response = await _dio.get('/ai-guide/conversations/$id/messages');
       return response.data;
     } catch (e) {
-      print('Error getting messages: $e');
+      debugPrint('Error getting messages: $e');
       return null;
     }
   }
@@ -35,8 +36,8 @@ class ChatService {
       final response = await _dio.post('/ai-guide/ask', data: data);
       return response.data;
     } catch (e) {
-      print('Error asking question: $e');
-      throw e;
+      debugPrint('Error asking question: $e');
+      rethrow;
     }
   }
 
@@ -45,7 +46,7 @@ class ChatService {
       await _dio.patch('/ai-guide/conversations/$id/title', data: {'title': title});
       return true;
     } catch (e) {
-      print('Error updating title: $e');
+      debugPrint('Error updating title: $e');
       return false;
     }
   }
@@ -55,7 +56,7 @@ class ChatService {
       await _dio.delete('/ai-guide/conversations/$id');
       return true;
     } catch (e) {
-      print('Error deleting conversation: $e');
+      debugPrint('Error deleting conversation: $e');
       return false;
     }
   }
@@ -67,7 +68,7 @@ class ChatService {
       });
       return response.data;
     } catch (e) {
-      print('Error describing monument: $e');
+      debugPrint('Error describing monument: $e');
       return null;
     }
   }
@@ -80,7 +81,7 @@ class ChatService {
       });
       return response.data;
     } catch (e) {
-      print('Error identifying monument: $e');
+      debugPrint('Error identifying monument: $e');
       return null;
     }
   }

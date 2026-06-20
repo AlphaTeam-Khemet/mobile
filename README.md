@@ -32,10 +32,11 @@ The codebase follows a modular, feature-based architecture ensuring scalability 
 
 ```text
 lib/
-├── auth/            # Authentication flows (Signin, Register, Verification)
+├── auth/            # Authentication flows (Sign In, Register, Verification)
 ├── chat/            # Khemet AI Chatbot interfaces and logic
-├── core/            # Core utilities (e.g., networking configurations via Dio)
+├── core/            # Core utilities (Dio client, API config, service classes)
 ├── details/         # Artifact details, collections, favorites, profile, and settings
+├── forgot_password/ # Forgot password, OTP verification, and reset password flows
 ├── home/            # Primary dashboards and tour initiation pages
 ├── localization/    # Multi-language support and dynamic language switching
 ├── main_tab_home/   # Main bottom navigation and tab routing logic

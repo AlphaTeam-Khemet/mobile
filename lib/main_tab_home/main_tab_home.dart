@@ -68,27 +68,60 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
 
     final existingIndex = favorites.indexWhere((f) => f['id'] == monument['id']);
 
-    try {
-      if (existingIndex != -1) {
-        final favoriteId = favorites[existingIndex]['favoriteId'];
-        await _favoriteService.removeFavorite(favoriteId);
-        setState(() => favorites.removeAt(existingIndex));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalization.translate("removed_from_favorites"))),
-        );
-      } else {
-        final favoriteId = await _favoriteService.addFavorite(monument['id']);
-        setState(() => favorites.add({...monument, 'favoriteId': favoriteId}));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalization.translate("added_to_favorites"))),
-        );
-      }
-    } catch (e) {
+    if (existingIndex != -1) {
+      // ── Optimistic remove ─────────────────────────────────────────────
+      // Snapshot the removed item so we can roll back if the API fails
+      final removed = favorites[existingIndex];
+      setState(() => favorites.removeAt(existingIndex));
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalization.translate("something_went_wrong")), backgroundColor: Colors.red),
+        SnackBar(content: Text(AppLocalization.translate("removed_from_favorites"))),
       );
+
+      try {
+        await _favoriteService.removeFavorite(removed['favoriteId']);
+      } catch (_) {
+        // Rollback: re-insert the item at its original position
+        setState(() => favorites.insert(existingIndex, removed));
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalization.translate("something_went_wrong")),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } else {
+      // ── Optimistic add ────────────────────────────────────────────────
+      // Show a temporary entry immediately, then replace with the real one
+      final tempEntry = {...monument, 'favoriteId': -1};
+      setState(() => favorites.add(tempEntry));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalization.translate("added_to_favorites"))),
+      );
+
+      try {
+        final favoriteId = await _favoriteService.addFavorite(monument['id']);
+        // Update the temp entry with the real favoriteId from the server
+        final addedIndex = favorites.indexWhere((f) => f['id'] == monument['id'] && f['favoriteId'] == -1);
+        if (addedIndex != -1) {
+          setState(() => favorites[addedIndex] = {...monument, 'favoriteId': favoriteId});
+        }
+      } catch (_) {
+        // Rollback: remove the optimistically-added item
+        setState(() => favorites.removeWhere((f) => f['id'] == monument['id'] && f['favoriteId'] == -1));
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalization.translate("something_went_wrong")),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
     }
   }
+
 
   void _openTranslate(BuildContext context) {
     if (widget.isGuest) {

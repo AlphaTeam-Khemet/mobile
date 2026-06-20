@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../localization/app_localization.dart';
 import '../shared_widgets/language_manager.dart';
+import '../core/network/user_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -18,13 +19,29 @@ class _SettingsPageState extends State<SettingsPage> {
     {"code": "ar", "label": "🇪🇬 العربية"},
     {"code": "de", "label": "🇩🇪 Deutsch"},
     {"code": "ru", "label": "🇷🇺 Русский"},
+    {"code": "fr", "label": "🇫🇷 Français"},
+    {"code": "es", "label": "🇪🇸 Español"},
+    {"code": "zh", "label": "🇨🇳 中文"},
   ];
 
 
 
   bool notificationsEnabled = true;
-
   String selectedTextSize = "Medium";
+  String _displayName = '';  // loaded from backend
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileName();
+  }
+
+  Future<void> _loadProfileName() async {
+    final data = await UserService().getProfile();
+    if (data != null && mounted) {
+      setState(() => _displayName = data['full_name'] ?? '');
+    }
+  }
   Future<void> _openFacebook() async {
     final Uri url =
     Uri.parse('https://www.facebook.com/share/1EnoZDpBSH/');
@@ -152,7 +169,9 @@ class _SettingsPageState extends State<SettingsPage> {
                       children:  [
 
                         Text(
-                          AppLocalization.translate("alpha_team"),
+                          _displayName.isNotEmpty
+                              ? _displayName
+                              : AppLocalization.translate("alpha_team"),
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,

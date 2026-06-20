@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'api_config.dart';
 import 'dio_client.dart';
 
 class VoiceService {
@@ -12,7 +14,7 @@ class VoiceService {
   }) async {
     try {
       final response = await _dio.post(
-        'voice/artifacts/$artifactId/narrate',
+        '/voice/artifacts/$artifactId/narrate',
         data: {
           'language': language,
           'artifact_name': artifactName,
@@ -25,13 +27,13 @@ class VoiceService {
         if (audioUrl != null) {
           final filename = audioUrl.toString().split('/').last;
           // Return the full backend URL that the device can reach
-          return '${DioClient().dio.options.baseUrl}/voice/audio/$filename';
+          return '${ApiConfig.mediaBaseUrl}/api/voice/audio/$filename';
         }
       }
       return null;
     } catch (e) {
-      print('Voice generation error: $e');
-      throw e;
+      debugPrint('Voice generation error: $e');
+      rethrow;
     }
   }
 }
