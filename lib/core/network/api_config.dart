@@ -1,13 +1,8 @@
 class ApiConfig {
-  static const bool useDeviceLan = true;
-  static const String _lanIp = '192.168.1.18';
-  static const String _emulatorIp = '10.0.2.2';
+  // Point directly to the live production server over secure HTTPS
+  static String get baseUrl => 'https://khemetai.com/api';
 
-  static String get _host => useDeviceLan ? _lanIp : _emulatorIp;
-
-  static String get baseUrl => 'http://$_host:3000/api';
-
-  static String get mediaBaseUrl => 'http://$_host:3000';
+  static String get mediaBaseUrl => 'https://khemetai.com';
 
   static String resolveImageUrl(String? path) {
     if (path == null || path.isEmpty) return '';

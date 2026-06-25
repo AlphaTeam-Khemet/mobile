@@ -23,6 +23,9 @@ class _CustomLanguageDropdownState
     {"code": "ar", "label": "🇪🇬 العربية"},
     {"code": "de", "label": "🇩🇪 Deutsch"},
     {"code": "ru", "label": "🇷🇺 Русский"},
+    {"code": "fr", "label": "🇫🇷 Français"},
+    {"code": "es", "label": "🇪🇸 Español"},
+    {"code": "zh", "label": "🇨🇳 中文"},
   ];
 
   @override

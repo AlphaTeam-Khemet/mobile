@@ -49,7 +49,7 @@ class _ScanPageState extends State<ScanPage> {
 
     _cameraController = CameraController(
       firstCamera, 
-      ResolutionPreset.max, 
+      ResolutionPreset.medium, 
       enableAudio: false,
     );
 
@@ -74,7 +74,11 @@ class _ScanPageState extends State<ScanPage> {
 
   Future<void> _openGallery() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? image = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 70,
+      maxWidth: 1024,
+    );
 
     if (image != null && mounted) {
       Navigator.push(
