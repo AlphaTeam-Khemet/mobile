@@ -34,6 +34,7 @@ class AuthService {
           'password': password,
           'full_name': fullName,
           'preferred_language': _languageIds[preferredLanguage] ?? 1,
+          'client': 'mobile',
         },
       );
       await _storeTokens(response.data);
@@ -79,7 +80,7 @@ class AuthService {
 
   Future<AuthResult> resendEmailVerification() async {
     try {
-      await _dio.post('/auth/resend-email-verification');
+      await _dio.post('/auth/resend-email-verification', data: {'client': 'mobile'});
       return AuthResult(success: true);
     } on DioException catch (e) {
       return AuthResult(success: false, errorMessage: _extractError(e));

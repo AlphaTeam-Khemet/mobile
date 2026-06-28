@@ -46,6 +46,7 @@ dependencies:
   url_launcher: ^6.3.0
   cached_network_image: ^3.4.1
   audioplayers: ^6.7.1
+  flutter_image_compress: ^2.4.0
 
 dev_dependencies:
   flutter_test:
